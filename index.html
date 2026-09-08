@@ -2,18 +2,29 @@
 <html lang="ko">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
 
-    <title>Pediatric Chest X-ray Pneumonia Classification</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <title>Chest X-ray 기반 폐렴 이진 분류</title>
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/white.css">
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css"
+  >
 
-    <link rel="stylesheet" href="css/custom.css">
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/white.css"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/custom.css"
+  >
 </head>
 
 <body>
@@ -21,522 +32,1824 @@
 <div class="reveal">
 <div class="slides">
 
-    <!-- 1. 프로젝트 주제 -->
-    <section class="title-slide">
-        <h2>1. 프로젝트 주제</h2>
 
-        <div class="content-box">
-            <p>Chest X-ray 기반 <strong>Binary Classification</strong></p>
-            <p class="class-label">
-                NORMAL <span>/</span> PNEUMONIA
-            </p>
+<!-- =========================================================
+01 TITLE
+========================================================= -->
+
+<section class="title-slide">
+
+  <div class="eyebrow">
+    Chest X-ray Pneumonia Classification
+  </div>
+
+  <h1>
+    Chest X-ray 기반<br>
+    폐렴 이진 분류
+  </h1>
+
+  <p class="subtitle">
+    ResNet-50 · Scratch vs Transfer Learning · Grad-CAM++
+  </p>
+
+  <div class="title-image real-image cover-image">
+    <img
+      src="images/chest_xray.jpg"
+      alt="Chest X-ray"
+    >
+  </div>
+
+  <div class="student-info">
+    202544030 이현서
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+02 CONTENTS
+========================================================= -->
+
+<section>
+
+  <h2>목차</h2>
+
+  <div class="toc-grid">
+
+    <div class="toc-card">
+      <span>01</span>
+      <strong>프로젝트 소개</strong>
+      <small>프로젝트 목표 · 선택 이유</small>
+    </div>
+
+    <div class="toc-card">
+      <span>02</span>
+      <strong>프로젝트 계획</strong>
+      <small>로드맵 · Tech Stack</small>
+    </div>
+
+    <div class="toc-card">
+      <span>03</span>
+      <strong>Dataset</strong>
+      <small>구성 · 문제점 · 재구성</small>
+    </div>
+
+    <div class="toc-card">
+      <span>04</span>
+      <strong>모델 및 학습</strong>
+      <small>ResNet-50 · 학습 방식 비교</small>
+    </div>
+
+    <div class="toc-card">
+      <span>05</span>
+      <strong>평가 및 설명</strong>
+      <small>평가지표 · Grad-CAM++</small>
+    </div>
+
+    <div class="toc-card">
+      <span>06</span>
+      <strong>현재 진행상황</strong>
+      <small>데이터 확인 · Split 수정 · 검증</small>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+03 PROJECT INTRO
+========================================================= -->
+
+<section>
+
+  <h2>프로젝트 소개 및 목표</h2>
+
+  <div class="project-intro-layout">
+
+    <div class="project-flow">
+
+      <div class="flow-box">
+        <span>INPUT</span>
+        <strong>Chest X-ray</strong>
+      </div>
+
+      <div class="flow-arrow">→</div>
+
+      <div class="flow-box active">
+        <span>MODEL</span>
+        <strong>ResNet-50</strong>
+      </div>
+
+      <div class="flow-arrow">→</div>
+
+      <div class="flow-box">
+        <span>OUTPUT</span>
+        <strong>
+          NORMAL<br>
+          PNEUMONIA
+        </strong>
+      </div>
+
+      <div class="flow-arrow">→</div>
+
+      <div class="flow-box">
+        <span>XAI</span>
+        <strong>Grad-CAM++</strong>
+      </div>
+
+    </div>
+
+
+    <div class="intro-goals">
+
+      <div>
+        <span>01</span>
+
+        <div>
+          <strong>NORMAL / PNEUMONIA 분류</strong>
+          <p>Chest X-ray 기반 폐렴 이진 분류</p>
         </div>
-    </section>
+      </div>
 
-    <!-- 목차 -->
-    <section class="toc-slide">
-        <h2>목차</h2>
+      <div>
+        <span>02</span>
 
-        <div class="toc-grid">
+        <div>
+          <strong>Scratch vs Transfer Learning</strong>
+          <p>학습 방식에 따른 성능 비교</p>
+        </div>
+      </div>
 
-            <div class="toc-item">
-                <span class="toc-number">01</span>
-                <div>
-                    <strong>프로젝트 주제</strong>
-                    <p>Chest X-ray 폐렴 이진 분류</p>
-                </div>
-            </div>
+      <div>
+        <span>03</span>
 
-            <div class="toc-item">
-                <span class="toc-number">02</span>
-                <div>
-                    <strong>프로젝트 목적 및 동기</strong>
-                    <p>프로젝트 목적 · 동기 · 로드맵</p>
-                </div>
-            </div>
+        <div>
+          <strong>Grad-CAM++</strong>
+          <p>모델의 판단 영역 시각화</p>
+        </div>
+      </div>
 
-            <div class="toc-item">
-                <span class="toc-number">03</span>
-                <div>
-                    <strong>Tech Stack 및 Dataset 소개</strong>
-                    <p>개발 환경 · 데이터셋 구성</p>
-                </div>
-            </div>
+    </div>
 
-            <div class="toc-item">
-                <span class="toc-number">04</span>
-                <div>
-                    <strong>데이터셋 재구성</strong>
-                    <p>Stratified Split · 클래스 비율</p>
-                </div>
-            </div>
+  </div>
 
-            <div class="toc-item">
-                <span class="toc-number">05</span>
-                <div>
-                    <strong>전처리 계획</strong>
-                    <p>Resize · Normalization · Augmentation</p>
-                </div>
-            </div>
+</section>
 
-            <div class="toc-item">
-                <span class="toc-number">06</span>
-                <div>
-                    <strong>모델 선정</strong>
-                    <p>ResNet-50 · Scratch vs Transfer Learning</p>
-                </div>
-            </div>
 
-            <div class="toc-item">
-                <span class="toc-number">07</span>
-                <div>
-                    <strong>Transfer Learning 학습 계획</strong>
-                    <p>Backbone Freeze · Fine-tuning</p>
-                </div>
-            </div>
+<!-- =========================================================
+04 WHY PROJECT
+========================================================= -->
 
-            <div class="toc-item">
-                <span class="toc-number">08</span>
-                <div>
-                    <strong>평가 방법</strong>
-                    <p>Accuracy · Recall · F1 · AUROC</p>
-                </div>
-            </div>
+<section>
 
-            <div class="toc-item">
-                <span class="toc-number">09</span>
-                <div>
-                    <strong>모델 판단 근거 확인</strong>
-                    <p>XAI · Grad-CAM++</p>
-                </div>
-            </div>
+  <h2>프로젝트 선택 이유</h2>
+
+  <div class="three-card-grid">
+
+    <div class="feature-card">
+      <span class="number">01</span>
+
+      <h3>의료영상 AI</h3>
+
+      <p>
+        관심 분야인 의료영상 분석을<br>
+        프로젝트에 직접 적용
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <span class="number">02</span>
+
+      <h3>모델 개발 경험</h3>
+
+      <p>
+        데이터 구성부터 학습·평가까지<br>
+        전체 개발 과정 경험
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <span class="number">03</span>
+
+      <h3>모델 해석</h3>
+
+      <p>
+        단순 성능 비교를 넘어<br>
+        모델의 판단 근거까지 분석
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+05 ROADMAP
+========================================================= -->
+
+<section>
+
+  <h2>프로젝트 로드맵</h2>
+
+  <div class="roadmap">
+
+    <div class="roadmap-item active">
+      <span>01</span>
+      <strong>데이터</strong>
+      <small>분석 · Split</small>
+    </div>
+
+    <b>→</b>
+
+    <div class="roadmap-item">
+      <span>02</span>
+      <strong>모델 학습</strong>
+      <small>Scratch · Transfer</small>
+    </div>
+
+    <b>→</b>
+
+    <div class="roadmap-item">
+      <span>03</span>
+      <strong>성능 평가</strong>
+      <small>Recall · F1 · AUROC</small>
+    </div>
+
+    <b>→</b>
+
+    <div class="roadmap-item">
+      <span>04</span>
+      <strong>판단 근거</strong>
+      <small>Grad-CAM++</small>
+    </div>
+
+    <b>→</b>
+
+    <div class="roadmap-item">
+      <span>05</span>
+      <strong>UI 구현</strong>
+      <small>PyQt</small>
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    현재 단계 :
+    <strong>Dataset 분석 및 재구성</strong>
+  </p>
+
+</section>
+
+
+<!-- =========================================================
+06 TECH STACK
+========================================================= -->
+
+<section>
+
+  <h2>Tech Stack</h2>
+
+  <div class="tech-grid">
+
+    <div class="tech-card">
+      <span>Language</span>
+      <strong>Python</strong>
+    </div>
+
+    <div class="tech-card">
+      <span>Deep Learning</span>
+      <strong>PyTorch · torchvision</strong>
+    </div>
+
+    <div class="tech-card">
+      <span>Computer Vision</span>
+      <strong>OpenCV</strong>
+    </div>
+
+    <div class="tech-card">
+      <span>Evaluation</span>
+      <strong>scikit-learn</strong>
+    </div>
+
+    <div class="tech-card">
+      <span>GUI</span>
+      <strong>PyQt</strong>
+    </div>
+
+    <div class="tech-card">
+      <span>Version Control</span>
+      <strong>Git · GitHub</strong>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+07 DATASET INTRO
+========================================================= -->
+
+<section>
+
+  <h2>Dataset 소개</h2>
+
+  <div class="dataset-layout">
+
+    <div>
+
+      <div class="eyebrow">
+        Kaggle Public Dataset
+      </div>
+
+      <h3 class="dataset-name">
+        Chest X-Ray Images (Pneumonia)
+      </h3>
+
+      <div class="big-stat">
+        5,856
+        <small>images</small>
+      </div>
+
+      <div class="binary-box">
+
+        <div>
+          <span>Original Label</span>
+          <strong>
+            NORMAL<br>
+            Bacterial Pneumonia<br>
+            Viral Pneumonia
+          </strong>
+        </div>
+
+        <b>→</b>
+
+        <div class="binary-result">
+          <span>Binary Classification</span>
+          <strong>
+            NORMAL<br>
+            PNEUMONIA
+          </strong>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="dataset-image real-image">
+      <img
+        src="images/dataset_classes.png"
+        alt="Normal bacterial viral pneumonia"
+      >
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+08 DATASET ISSUES
+========================================================= -->
+
+<section>
+
+  <h2>Dataset 확인 결과</h2>
+
+  <div class="problem-grid">
+
+    <div class="problem-card">
+
+      <span>01</span>
+
+      <h3>Image Resolution</h3>
+
+      <div class="problem-main">
+        해상도 불균일
+      </div>
+
+      <p>
+        원본 이미지 크기가 일정하지 않음
+      </p>
+
+    </div>
+
+
+    <div class="problem-card">
+
+      <span>02</span>
+
+      <h3>Original Split</h3>
+
+      <div class="split-numbers">
+
+        <div>
+          <small>Train</small>
+          <strong>5,216</strong>
+        </div>
+
+        <div>
+          <small>Val</small>
+          <strong>16</strong>
+        </div>
+
+        <div>
+          <small>Test</small>
+          <strong>624</strong>
+        </div>
+
+      </div>
+
+      <p>
+        Validation 데이터가 지나치게 적음
+      </p>
+
+    </div>
+
+
+    <div class="problem-card">
+
+      <span>03</span>
+
+      <h3>Class Distribution</h3>
+
+      <div class="class-numbers">
+
+        <div>
+          <small>NORMAL</small>
+          <strong>1,583</strong>
+          <em>27%</em>
+        </div>
+
+        <div>
+          <small>PNEUMONIA</small>
+          <strong>4,273</strong>
+          <em>73%</em>
+        </div>
+
+      </div>
+
+      <p>
+        클래스 불균형 존재
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+09 INITIAL SPLIT PLAN
+========================================================= -->
+
+<section>
+
+  <h2>Dataset 재구성 계획</h2>
+
+  <div class="pipeline">
+
+    <div>
+      <small>Original</small>
+      <strong>Train · Val · Test</strong>
+    </div>
+
+    <b>→</b>
+
+    <div>
+      <small>Merge</small>
+      <strong>Full Dataset</strong>
+    </div>
+
+    <b>→</b>
+
+    <div class="active-box">
+      <small>Re-split</small>
+      <strong>Stratified Split</strong>
+    </div>
+
+    <b>→</b>
+
+    <div>
+      <small>New</small>
+      <strong>Train · Val · Test</strong>
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    NORMAL / PNEUMONIA
+    <strong>클래스 비율을 유지하며 재분할</strong>
+  </p>
+
+</section>
+
+
+<!-- =========================================================
+10 MODEL
+========================================================= -->
+
+<section>
+
+  <h2>모델 선정 — ResNet-50</h2>
+
+  <div class="two-column">
+
+    <div class="resnet-image real-image">
+      <img
+        src="images/resnet50_residual_block.png"
+        alt="Residual Block"
+      >
+    </div>
+
+    <div>
+
+      <div class="model-name">
+        ResNet-50
+      </div>
+
+      <div class="tag-list">
+        <span>Residual Connection</span>
+        <span>Deep CNN</span>
+        <span>ImageNet Pretrained</span>
+      </div>
+
+      <div class="reason-list">
+
+        <div>
+          깊은 네트워크 학습에 안정적
+        </div>
+
+        <div>
+          대표적인 CNN Backbone
+        </div>
+
+        <div>
+          ImageNet Pretrained Weight 사용 가능
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+11 SCRATCH VS TRANSFER
+========================================================= -->
+
+<section>
+
+  <h2>Scratch vs Transfer Learning</h2>
+
+  <div class="comparison-grid">
+
+    <div class="comparison-card">
+
+      <h3>Scratch</h3>
+
+      <small>처음부터 학습</small>
+
+      <div class="weight-box">
+        Random Weights
+      </div>
+
+      <div class="down-arrow">
+        ↓
+      </div>
+
+      <strong>
+        Chest X-ray Dataset
+      </strong>
+
+    </div>
+
+
+    <div class="vs">
+      VS
+    </div>
+
+
+    <div class="comparison-card">
+
+      <h3>Transfer Learning</h3>
+
+      <small>전이학습</small>
+
+      <div class="weight-box">
+        ImageNet Pretrained Weights
+      </div>
+
+      <div class="down-arrow">
+        ↓
+      </div>
+
+      <strong>
+        Fine-tuning
+      </strong>
+
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    동일한 ResNet-50에서
+    <strong>초기 가중치 차이에 따른 성능 비교</strong>
+  </p>
+
+</section>
+
+
+<!-- =========================================================
+12 PREPROCESSING
+========================================================= -->
+
+<section>
+
+  <h2>전처리 계획</h2>
+
+  <div class="three-card-grid">
+
+    <div class="feature-card">
+      <div class="large-symbol">
+        224×224
+      </div>
+
+      <h3>Resize</h3>
+
+      <p>
+        ResNet-50 입력 크기에 맞게 변환
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="large-symbol">
+        μ / σ
+      </div>
+
+      <h3>Normalization</h3>
+
+      <p>
+        ImageNet 기준 정규화 적용
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="large-symbol">
+        ↻
+      </div>
+
+      <h3>Augmentation</h3>
+
+      <p>
+        실험을 통해 증강 범위 조정
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+13 METRICS
+========================================================= -->
+
+<section>
+
+  <h2>평가 방법</h2>
+
+  <div class="metric-grid">
+
+    <div class="metric-card">
+      <strong>Accuracy</strong>
+
+      <p>
+        전체 예측 중 올바르게 분류한 비율
+      </p>
+    </div>
+
+    <div class="metric-card metric-highlight">
+      <strong>Recall</strong>
+
+      <p>
+        실제 PNEUMONIA 중 올바르게 탐지한 비율
+      </p>
+    </div>
+
+    <div class="metric-card">
+      <strong>Precision</strong>
+
+      <p>
+        PNEUMONIA 예측 중 실제 PNEUMONIA 비율
+      </p>
+    </div>
+
+    <div class="metric-card">
+      <strong>F1-score</strong>
+
+      <p>
+        Precision과 Recall의 균형
+      </p>
+    </div>
+
+    <div class="metric-card">
+      <strong>AUROC</strong>
+
+      <p>
+        임계값 전반에서의 분류 성능
+      </p>
+    </div>
+
+    <div class="metric-card">
+      <strong>Confusion Matrix</strong>
+
+      <p>
+        예측 결과의 유형별 분포
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+14 ACCURACY EXAMPLE
+========================================================= -->
+
+<section>
+
+  <h2>왜 Accuracy만으로 평가하기 어려운가?</h2>
+
+  <div class="patient-summary">
+
+    <span>환자 100명</span>
+
+    <div>
+      <strong>90</strong>
+      <small>NORMAL</small>
+    </div>
+
+    <div>
+      <strong>10</strong>
+      <small>PNEUMONIA</small>
+    </div>
+
+  </div>
+
+  <div class="accuracy-example">
+
+    <div>
+      <small>
+        모든 환자를 NORMAL로 예측
+      </small>
+
+      <strong>
+        Accuracy 90%
+      </strong>
+    </div>
+
+    <b>
+      BUT
+    </b>
+
+    <div class="danger-card">
+      <small>
+        PNEUMONIA 탐지
+      </small>
+
+      <strong>
+        Recall 0%
+      </strong>
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    높은 Accuracy가
+    <strong>PNEUMONIA 탐지 성능을 의미하지는 않음</strong>
+  </p>
+
+</section>
+
+
+<!-- =========================================================
+15 XAI
+========================================================= -->
+
+<section>
+
+  <h2>모델은 어디를 보고 판단했을까?</h2>
+
+  <div class="xai-title">
+    높은 성능
+    <strong>≠</strong>
+    올바른 판단 근거
+  </div>
+
+  <div class="two-column compact-two-column">
+
+    <div class="gradcam-image real-image">
+      <img
+        src="images/gradcam.jpg"
+        alt="Grad-CAM example"
+      >
+    </div>
+
+    <div class="key-list">
+
+      <div class="key-item">
+        <span>01</span>
+
+        <div>
+          <strong>판단 영역 확인</strong>
+
+          <p>
+            실제 폐 영역을 근거로 판단했는지 분석
+          </p>
+        </div>
+      </div>
+
+      <div class="key-item">
+        <span>02</span>
+
+        <div>
+          <strong>불필요한 특징 확인</strong>
+
+          <p>
+            문자나 촬영 위치 등에 의존했는지 확인
+          </p>
+        </div>
+      </div>
+
+      <div class="key-item">
+        <span>03</span>
+
+        <div>
+          <strong>Grad-CAM++</strong>
+
+          <p>
+            예측에 영향을 준 영역을 Heatmap으로 시각화
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+16 CURRENT PROGRESS
+========================================================= -->
+
+<section class="section-divider">
+
+  <div class="eyebrow">
+    CURRENT PROGRESS
+  </div>
+
+  <h1>
+    현재 진행상황
+  </h1>
+
+  <p>
+    데이터를 확인하는 과정에서
+    Split 방법을 수정했습니다.
+  </p>
+
+</section>
+
+
+<!-- =========================================================
+17 DATA CHECK
+========================================================= -->
+
+<section>
+
+  <h2>Split 전 Dataset 확인</h2>
+
+  <div class="progress-two-column">
+
+    <div class="data-check-card">
+
+      <span class="step-badge">
+        기존 계획
+      </span>
+
+      <h3>
+        Stratified Split 수행 예정
+      </h3>
+
+      <p class="sub-copy">
+        Split을 수행하기 전에 Dataset의 파일명과 구조를 확인
+      </p>
+
+      <div class="filename-example-box">
+
+        <span class="class-name">
+          PNEUMONIA 파일명 패턴
+        </span>
+
+        <code>
+          <strong>person1</strong>_bacteria_1.jpeg
+        </code>
+
+        <code>
+          <strong>person1</strong>_virus_100.jpeg
+        </code>
+
+        <code>
+          <strong>person2</strong>_bacteria_1.jpeg
+        </code>
+
+      </div>
+
+      <div class="finding-box">
+
+        <span>발견</span>
+
+        <strong>
+          동일한 person ID가<br>
+          여러 이미지에서 반복
+        </strong>
+
+      </div>
+
+    </div>
+
+
+    <div class="question-card">
+
+      <div class="question-mark">
+        ?
+      </div>
+
+      <h3>
+        반복되는 Group이<br>
+        실제로 얼마나 존재할까?
+      </h3>
+
+      <p>
+        파일명에서 Group ID를 추출하고<br>
+        Group별 이미지 개수를 코드로 확인
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+18 GROUP DISTRIBUTION
+========================================================= -->
+
+<section>
+
+  <h2>코드로 반복 Group 확인</h2>
+
+  <div class="code-result-layout">
+
+    <div class="code-explanation-card">
+
+      <div class="mini-title">
+        실제 코드 핵심 로직
+      </div>
+
+      <pre class="code-block distribution-code"><code># Group별 이미지 수 계산
+group_sizes = {
+    group_id: len(images)
+    for group_id, images
+    in group_images.items()
+}
+
+# Group당 이미지 개수 분포
+for cls in ["NORMAL", "PNEUMONIA"]:
+
+    distribution = Counter()
+
+    for group_id, images in group_images.items():
+
+        if group_class[group_id] == cls:
+
+            distribution[len(images)] += 1</code></pre>
+
+      <div class="code-caption">
+        각 Group이 몇 장의 이미지를 가지고 있는지 계산
+      </div>
+
+    </div>
+
+    <div class="result-image real-image">
+      <img
+        src="images/group_distribution.png"
+        alt="Group distribution"
+      >
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    동일한 filename-derived Group ID를 가진 이미지가
+    <strong>여러 장 존재함을 확인</strong>
+  </p>
+
+</section>
+
+
+<!-- =========================================================
+19 ORIGINAL SPLIT OVERLAP
+========================================================= -->
+
+<section>
+
+  <h2>기존 Split의 Group 중복 확인</h2>
+
+  <div class="overlap-layout">
+
+    <div>
+
+      <span class="step-badge">
+        추가 확인
+      </span>
+
+      <h3>
+        같은 Group이 기존 Train / Val / Test에
+        동시에 존재하는지 확인
+      </h3>
+
+      <pre class="code-block overlap-code"><code>overlap_groups = {
+
+    group_id: splits
+
+    for group_id, splits
+    in group_splits.items()
+
+    if len(splits) > 1
+
+}
+
+print(
+    "두 개 이상의 split에 존재하는 group:",
+    len(overlap_groups)
+)</code></pre>
+
+      <div class="overlap-result-number">
+        <span>
+          기존 Split 간 중복 Group
+        </span>
+
+        <strong>
+          264개
+        </strong>
+      </div>
+
+    </div>
+
+
+    <div class="original-overlap-image real-image">
+      <img
+        src="images/original_split_overlap.png"
+        alt="Original split group overlap"
+      >
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    기존 Dataset에서는 같은 Group이
+    <strong>서로 다른 Split에 존재하는 사례가 확인됨</strong>
+  </p>
+
+</section>
+
+
+<!-- =========================================================
+20 SPLIT CHANGE
+========================================================= -->
+
+<section>
+
+  <h2>Split 방식 변경</h2>
+
+  <div class="split-method-grid">
+
+    <div class="split-method-card">
+
+      <span class="step-badge">
+        기존 계획
+      </span>
+
+      <h3>
+        Stratified Split
+      </h3>
+
+      <div class="patient-diagram">
+
+        <strong>
+          홍길동
+        </strong>
+
+        <div class="image-row warning">
+
+          <div>
+            영상 1
+            <span>Train</span>
+          </div>
+
+          <div>
+            영상 2
+            <span>Test</span>
+          </div>
+
+          <div>
+            영상 3
+            <span>Train</span>
+          </div>
 
         </div>
-    </section>
 
-    <!-- 2. 프로젝트 목적 및 동기 -->
-    <section>
-        <h2>2. 프로젝트 목적 및 동기</h2>
+      </div>
 
-        <h3>프로젝트 목적</h3>
+      <p>
+        이미지 단위로 분할하면<br>
+        동일 Group의 이미지가 서로 다른 Split에
+        포함될 수 있음
+      </p>
+
+    </div>
+
+
+    <div class="method-arrow">
+
+      <span>→</span>
+
+      <strong>
+        Data Leakage<br>
+        가능성
+      </strong>
+
+      <small>
+        평가 결과가<br>
+        과대평가될 수 있음
+      </small>
+
+    </div>
+
+
+    <div class="split-method-card revised">
+
+      <span class="step-badge">
+        변경
+      </span>
+
+      <h3>
+        Group Stratified Split
+      </h3>
+
+      <div class="patient-diagram">
+
+        <strong>
+          홍길동
+        </strong>
+
+        <div class="image-row safe">
+
+          <div>
+            영상 1
+            <span>Test</span>
+          </div>
+
+          <div>
+            영상 2
+            <span>Test</span>
+          </div>
+
+          <div>
+            영상 3
+            <span>Test</span>
+          </div>
+
+        </div>
+
+        <strong class="second-patient">
+          이현서
+        </strong>
+
+        <div class="image-row safe two-images">
+
+          <div>
+            영상 1
+            <span>Train</span>
+          </div>
+
+          <div>
+            영상 2
+            <span>Train</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="strong-conclusion">
+    동일 Group은 하나의 Split에만 포함
+  </div>
+
+  <p class="example-caption">
+    ※ 환자명은 Group 개념을 설명하기 위한 예시
+  </p>
+
+</section>
+
+
+<!-- =========================================================
+21 GROUP ID
+========================================================= -->
+
+<section>
+
+  <h2>Group ID는 어떻게 정의했는가?</h2>
+
+  <div class="group-definition-grid">
+
+    <div class="group-definition-card">
+
+      <span class="class-chip">
+        PNEUMONIA
+      </span>
+
+      <div class="file-list">
+
+        <code>
+          <strong>person1</strong>_bacteria_1.jpeg
+        </code>
+
+        <code>
+          <strong>person1</strong>_virus_100.jpeg
+        </code>
+
+      </div>
+
+      <div class="extract-arrow">
+        ↓
+      </div>
+
+      <div class="group-id-box">
+        Group ID =
+        <strong>person1</strong>
+      </div>
+
+    </div>
+
+
+    <div class="group-definition-card">
+
+      <span class="class-chip">
+        NORMAL
+      </span>
+
+      <div class="file-list">
+
+        <code>
+          <strong>IM-0011</strong>-0001.jpeg
+        </code>
+
+        <code>
+          NORMAL2-<strong>IM-0011</strong>-0001.jpeg
+        </code>
+
+      </div>
+
+      <div class="extract-arrow">
+        ↓
+      </div>
+
+      <div class="group-id-box">
+        Group ID =
+        <strong>IM-0011</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="group-code-row">
+
+    <pre class="code-block compact-code"><code>def get_group_id(filename, label):
+
+    if label == "PNEUMONIA":
+        match = re.search(
+            r"(person\d+)",
+            filename,
+            re.IGNORECASE
+        )
+
+    elif label == "NORMAL":
+        match = re.search(
+            r"(IM-\d+)",
+            filename,
+            re.IGNORECASE
+        )
+
+    if match is None:
+        raise ValueError(
+            f"Group ID 추출 실패: {filename}"
+        )
+
+    return f"{label}_{match.group(1).upper()}"</code></pre>
+
+    <div class="group-note">
+
+      <strong>
+        filename-derived Group ID
+      </strong>
+
+      <p>
+        확정된 환자 ID가 아니라<br>
+        파일명에서 반복되는 식별자를 기준으로 Group을 구성
+      </p>
+
+      <p>
+        동일 Group이 여러 Split으로 분리되는 위험을
+        줄이기 위해 사용
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+22 ACTUAL STRATIFIED GROUP SPLIT
+========================================================= -->
+
+<section>
+
+  <h2>Group Stratified Split 실제 수행</h2>
+
+  <div class="execution-flow">
+
+    <div>
+      <span>01</span>
+      <strong>기존 Dataset 병합</strong>
+      <small>Train · Val · Test</small>
+    </div>
+
+    <b>→</b>
+
+    <div>
+      <span>02</span>
+      <strong>Group ID 생성</strong>
+      <small>filename 기반</small>
+    </div>
+
+    <b>→</b>
+
+    <div>
+      <span>03</span>
+      <strong>10개 Fold 생성</strong>
+      <small>StratifiedGroupKFold</small>
+    </div>
+
+    <b>→</b>
+
+    <div>
+      <span>04</span>
+      <strong>Split 지정</strong>
+      <small>8 : 1 : 1</small>
+    </div>
+
+    <b>→</b>
+
+    <div class="done-step">
+      <span>05</span>
+      <strong>검증 및 저장</strong>
+      <small>CSV</small>
+    </div>
+
+  </div>
+
+  <div class="split-code-layout">
+
+    <pre class="code-block split-code"><code>sgkf = StratifiedGroupKFold(
+    n_splits=10,
+    shuffle=True,
+    random_state=42
+)
+
+for fold, (_, fold_idx) in enumerate(
+    sgkf.split(
+        X=df["filepath"],
+        y=df["label"],
+        groups=df["group_id"]
+    )
+):
+    df.loc[fold_idx, "fold"] = fold
+
+df["split"] = "train"
+
+df.loc[
+    df["fold"] == 8,
+    "split"
+] = "val"
+
+df.loc[
+    df["fold"] == 9,
+    "split"
+] = "test"</code></pre>
+
+
+    <div class="split-explanation">
+
+      <div>
+        <span>y</span>
+
         <p>
-            Chest X-ray 영상을 입력받아
-            <strong>폐렴 여부를 분류하는 딥러닝 모델</strong>을 구축하고,
-            <strong>Grad-CAM++</strong>를 통해
-            모델이 영상의 어떤 영역을 근거로 판단했는지 시각화
+          <strong>label</strong><br>
+          NORMAL / PNEUMONIA 비율 고려
         </p>
+      </div>
 
-        <br>
-
-        <h3>프로젝트 동기</h3>
-        <p>
-            의료영상 AI에서는 단순히 높은 분류 성능을 얻는 것뿐만 아니라,
-            <strong>실제 질환을 얼마나 잘 탐지하는지</strong>와
-            <strong>모델이 적절한 영역을 보고 판단했는지</strong>를
-            함께 확인하는 과정이 중요
-        </p>
-
-        <div class="experiment-purpose">
-            <p>
-                따라서 <strong>Scratch와 Transfer Learning의 성능을 비교</strong>하고,
-                다양한 평가 지표와 <strong>Grad-CAM++</strong>를 활용하여
-                모델의 성능과 판단 근거를 함께 분석
-            </p>
-        </div>
-    </section>
-
-
-
-    <!-- 2-1. 프로젝트 로드맵 -->
-    <section>
-        <h2>2-1. 프로젝트 로드맵</h2>
-
-        <div class="roadmap">
-
-            <div class="roadmap-step">
-                <div class="step-number">01</div>
-                <h3>데이터 준비</h3>
-                <p>6:2:2 데이터 분할</p>
-                <p>전처리 및 Augmentation 결정</p>
-            </div>
-
-            <div class="roadmap-arrow">→</div>
-
-            <div class="roadmap-step">
-                <div class="step-number">02</div>
-                <h3>모델 학습</h3>
-                <p>ResNet from Scratch</p>
-                <p>Transfer Learning</p>
-            </div>
-
-            <div class="roadmap-arrow">→</div>
-
-            <div class="roadmap-step">
-                <div class="step-number">03</div>
-                <h3>성능 평가</h3>
-                <p>Accuracy / Recall / F1</p>
-                <p>AUROC / Confusion Matrix</p>
-            </div>
-
-            <div class="roadmap-arrow">→</div>
-
-            <div class="roadmap-step">
-                <div class="step-number">04</div>
-                <h3>XAI 분석</h3>
-                <p>Grad-CAM++ 적용</p>
-                <p>모델의 주요 판단 영역 확인</p>
-            </div>
-
-            <div class="roadmap-arrow">→</div>
-
-            <div class="roadmap-step">
-                <div class="step-number">05</div>
-                <h3>UI 구현</h3>
-                <p>X-ray 이미지 입력</p>
-                <p>분류 결과 및 XAI 시각화</p>
-            </div>
-
-        </div>
-    </section>
-
-
-
-    <!-- 3-1. Tech Stack -->
-    <section>
-        <h2>3. Tech Stack 및 Dataset 소개</h2>
-
-        <h3>3-1. Tech Stack</h3>
-
-        <div class="tech-stack">
-            <p><strong>Language</strong> Python</p>
-            <p><strong>Deep Learning</strong> PyTorch, torchvision</p>
-            <p><strong>Computer Vision</strong> OpenCV</p>
-            <p><strong>ML / Evaluation</strong> scikit-learn</p>
-            <p><strong>GUI</strong> PyQt</p>
-            <p><strong>Version Control</strong> Git, GitHub</p>
-        </div>
-    </section>
-
-
-    <!-- 3-2. Dataset 소개 -->
-    <section>
-        <h2>3-2. Dataset 소개</h2>
-
-        <ul>
-            <li>
-                <strong>Chest X-Ray Images (Pneumonia)</strong>
-                — NORMAL / PNEUMONIA
-            </li>
-
-            <li>
-                총 <strong>5,856장</strong>
-            </li>
-
-            <li>
-                원본 이미지의 해상도가 일정하지 않음
-            </li>
-
-            <li>
-                원본 Train / Val / Test 비율 ≈
-                <strong>89.1 : 0.27 : 10.7</strong>
-            </li>
-        </ul>
-    </section>
-
-
-    <!-- 3-2. Dataset Label 구성 -->
-    <section>
-        <h2>3-2. Dataset 소개</h2>
-
-        <div class="dataset-label">
-
-            <p><strong>Original Labels</strong></p>
-
-            <p>Normal</p>
-
-            <p>Pneumonia → Bacterial / Viral</p>
-
-            <br>
-
-            <p>↓ 본 프로젝트에서는 통합</p>
-
-            <p><strong>Binary Classification</strong></p>
-
-            <p>Normal</p>
-
-            <p>Pneumonia (Bacterial + Viral)</p>
-
-        </div>
-    </section>
-
-    <!-- 4. 데이터셋 재구성 --> 
-    <section>
-        <h2>4. 데이터셋 재구성</h2>
-
-        <ul>
-            <li>
-                기존 Train / Val / Test를 통합한 후
-                <strong>Stratified Split</strong>
-            </li>
-
-            <li>
-                Train : Validation : Test =
-                <strong>6 : 2 : 2</strong>
-            </li>
-
-            <li>
-                클래스 비율 유지
-                — NORMAL 약 <strong>27%</strong>,
-                PNEUMONIA 약 <strong>73%</strong>
-            </li>
-
-            <li>
-                Train <strong>3,514</strong> /
-                Validation <strong>1,171</strong> /
-                Test <strong>1,171</strong>
-            </li>
-        </ul>
-    </section>
-
-
-    <!-- 5. 전처리 계획 -->
-    <section>
-        <h2>5. 전처리 계획</h2>
-
-        <ul>
-            <li>
-                <strong>Input Resize: 224×224</strong>
-                - ResNet의 일반적인 ImageNet 입력 크기를 기준으로 설정
-            </li>
-
-            <li>
-                <strong>Normalization</strong>
-                - ImageNet pretrained ResNet에 맞는 정규화 적용
-            </li>
-
-            <li>
-                <strong>Augmentation (데이터 증강)</strong>
-                - 기존 데이터를 변형하여 데이터의 양과 다양성을 증가
-            </li>
-
-            <li>
-                어떤 Augmentation을 사용할지는 추가 실험 예정
-            </li>
-        </ul>
-    </section>
-
-
-    <!-- 6. 모델 선정 -->
-    <section>
-        <h2>6. 모델 선정</h2>
-        <h3>전이학습 성능 향상 확인 실험</h3>
-
-        <ul>
-            <li>
-                <strong>ResNet-50</strong>
-            </li>
-
-            <li>
-                Residual Connection을 통해 비교적 깊은 네트워크를
-                안정적으로 학습 가능
-            </li>
-
-            <li>
-                이미지 분류에서 널리 사용되는 대표적인 CNN Backbone
-            </li>
-
-            <li>
-                ImageNet Pretrained Weight를 사용할 수 있어
-                전이학습 비교 실험에 적합
-            </li>
-        </ul>
-    </section>
-
-
-    <!-- 6-1 Scratch와 Transfet Learning의 비교 -->
-    <section class="comparison-slide">
-        <h2>6-1. Scratch와 Transfer Learning 비교</h2>
-
-        <h3>A. ResNet from Scratch</h3>
+      <div>
+        <span>groups</span>
 
         <p>
-            ResNet-50 구조 + <strong>랜덤하게 설정된 초기 가중치</strong><br>
-            → Chest X-ray 데이터만으로 처음부터 학습
+          <strong>group_id</strong><br>
+          동일 Group을 하나의 단위로 유지
         </p>
+      </div>
 
-        <h3>B. ResNet Transfer Learning</h3>
+      <div>
+        <span>fold</span>
 
         <p>
-            ImageNet 데이터로 <strong>미리 학습된 ResNet-50의 가중치</strong> 사용<br>
-            → Chest X-ray 데이터에 맞게 추가 학습(Fine-tuning)<br>
-            → 폐렴 분류 모델
+          <strong>0~7 / 8 / 9</strong><br>
+          Train / Val / Test로 사용
         </p>
+      </div>
 
-        <div class="experiment-purpose">
-            <p>
-                같은 ResNet-50 구조를 사용하되,
-                <strong>처음부터 학습하는 방법</strong>과
-                <strong>이미 학습된 가중치를 활용하는 방법</strong>을 비교하여
-                전이학습이 폐렴 분류 성능 향상에 도움이 되는지 확인
-            </p>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+23 VALIDATION
+========================================================= -->
+
+<section>
+
+  <h2>Split 결과 검증</h2>
+
+  <div class="validation-layout">
+
+    <div>
+
+      <pre class="code-block validation-code"><code>train_groups = set(
+    df[df["split"] == "train"]["group_id"]
+)
+
+val_groups = set(
+    df[df["split"] == "val"]["group_id"]
+)
+
+test_groups = set(
+    df[df["split"] == "test"]["group_id"]
+)
+
+train_val_overlap = (
+    train_groups & val_groups
+)
+
+train_test_overlap = (
+    train_groups & test_groups
+)
+
+val_test_overlap = (
+    val_groups & test_groups
+)</code></pre>
+
+      <div class="validation-top">
+
+        <div class="validation-card">
+          <span>Train ↔ Val</span>
+          <strong>0</strong>
         </div>
-    </section>
 
-
-    <!-- 7. Transfer Learning 학습 계획 -->
-    <section>
-        <h2>7. Transfer Learning 학습 계획</h2>
-
-        <ul>
-            <li>
-                <strong>1. Backbone Freeze</strong><br>
-                ImageNet에서 학습된 Backbone의 가중치는 고정하고,
-                새로 추가한 폐렴 분류 Classifier를 먼저 학습
-            </li>
-
-            <li>
-                <strong>2. Fine-tuning</strong><br>
-                이후 Backbone의 일부 또는 전체 Layer도 학습 가능하도록 변경하여
-                Chest X-ray 데이터에 맞게 추가 학습
-            </li>
-
-            <li>
-                <strong>3. 클래스 불균형 대응</strong><br>
-                우선 원본 클래스 비율을 유지하여 학습하고,
-                클래스별 성능을 확인한 뒤 필요할 경우 Class Weight 적용
-            </li>
-        </ul>
-    </section>
-
-    <!-- 8. 평가 방법 -->
-    <section>
-        <h2>8. 평가 방법</h2>
-
-        <div class="metric-list">
-
-            <div class="metric-row">
-                <strong>Accuracy</strong>
-                <span>전체 예측 중 모델이 올바르게 예측한 비율</span>
-            </div>
-
-            <div class="metric-row">
-                <strong>Recall (Sensitivity)</strong>
-                <span>실제 폐렴 환자 중 폐렴이라고 올바르게 찾아낸 비율</span>
-            </div>
-
-            <div class="metric-row">
-                <strong>Precision</strong>
-                <span>폐렴이라고 예측한 환자 중 실제 폐렴인 비율</span>
-            </div>
-
-            <div class="metric-row">
-                <strong>F1-score</strong>
-                <span>Precision과 Recall을 함께 고려한 지표</span>
-            </div>
-
-            <div class="metric-row">
-                <strong>AUROC</strong>
-                <span>여러 분류 기준에서 두 클래스를 얼마나 잘 구분하는지 평가</span>
-            </div>
-
-            <div class="metric-row">
-                <strong>Confusion Matrix</strong>
-                <span>정상과 폐렴을 각각 어떻게 맞추고 틀렸는지 확인</span>
-            </div>
-
+        <div class="validation-card">
+          <span>Train ↔ Test</span>
+          <strong>0</strong>
         </div>
-    </section>
 
-
-        <!-- 8-1. Accuracy만으로 평가할 수 없는 이유 -->
-    <section>
-        <h2>8-1. Accuracy만으로 평가할 수 없는 이유</h2>
-
-        <div class="accuracy-example">
-
-            <p class="example-title">
-                예시 — 환자 100명 중 정상 90명 / 폐렴 10명
-            </p>
-
-            <div class="prediction-box">
-                <p>
-                    모델이 <strong>100명 모두를 정상</strong>이라고 예측한다면?
-                </p>
-            </div>
-
-            <div class="result-grid">
-
-                <div>
-                    <strong>Accuracy</strong>
-                    <span>90%</span>
-                    <small>90 / 100명 정답</small>
-                </div>
-
-                <div>
-                    <strong>Pneumonia Recall</strong>
-                    <span>0%</span>
-                    <small>폐렴 환자 10명 모두 놓침</small>
-                </div>
-
-            </div>
-
-            <div class="experiment-purpose">
-                <p>
-                    높은 Accuracy가 반드시 좋은 의료 AI 모델을 의미하지 않음.
-                    따라서 <strong>Recall, Precision, F1-score, AUROC</strong> 등
-                    여러 지표를 함께 평가
-                </p>
-            </div>
-
+        <div class="validation-card">
+          <span>Val ↔ Test</span>
+          <strong>0</strong>
         </div>
-    </section>
 
-    <!-- 9. 모델 판단 근거 확인 -->
-    <section>
-        <h2>9. 모델 판단 근거 확인 (XAI)</h2>
+      </div>
 
-        <ul>
-            <li>
-                높은 분류 성능만으로는 모델이
-                <strong>올바른 영역을 보고 판단했는지 확인하기 어려움</strong>
-            </li>
+    </div>
 
-            <li>
-                특히 의료영상에서는 병변이 아닌 문자, 촬영 위치,
-                영상의 특정 패턴 등을 근거로 판단할 가능성도 존재
-            </li>
 
-            <li>
-                따라서 모델의 예측 결과뿐 아니라
-                <strong>어떤 영역을 근거로 판단했는지 확인</strong>할 필요가 있음
-            </li>
-        </ul>
+    <div class="validation-image real-image">
+      <img
+        src="images/group_leakage.png"
+        alt="Group leakage check"
+      >
+    </div>
 
-        <div class="experiment-purpose">
-            <p>
-                본 프로젝트에서는 <strong>Grad-CAM++</strong>를 사용하여
-                폐렴 분류에 영향을 준 X-ray 영역을 Heatmap으로 시각화
-            </p>
+  </div>
+
+  <p class="bottom-note">
+    새로운 Split에서는
+    <strong>서로 다른 Split 간 Group 중복이 없음을 확인</strong>
+  </p>
+
+</section>
+
+
+<!-- =========================================================
+24 CSV
+========================================================= -->
+
+<section>
+
+  <h2>Split 정보를 CSV로 저장한 이유</h2>
+
+  <div class="csv-layout">
+
+    <div class="csv-preview">
+
+      <div class="csv-title">
+        group_split.csv
+      </div>
+
+      <table>
+
+        <thead>
+        <tr>
+          <th>filepath</th>
+          <th>label</th>
+          <th>group_id</th>
+          <th>original_split</th>
+          <th>split</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr>
+          <td>...001.jpeg</td>
+          <td>NORMAL</td>
+          <td>NORMAL_IM-0011</td>
+          <td>train</td>
+          <td>train</td>
+        </tr>
+
+        <tr>
+          <td>...002.jpeg</td>
+          <td>PNEUMONIA</td>
+          <td>PNEUMONIA_PERSON1</td>
+          <td>test</td>
+          <td>val</td>
+        </tr>
+
+        <tr>
+          <td>...003.jpeg</td>
+          <td>PNEUMONIA</td>
+          <td>PNEUMONIA_PERSON2</td>
+          <td>train</td>
+          <td>test</td>
+        </tr>
+
+        </tbody>
+
+      </table>
+
+      <pre class="code-block csv-code"><code>output_df = df[
+    [
+        "filepath",
+        "label",
+        "group_id",
+        "original_split",
+        "split"
+    ]
+]
+
+output_df.to_csv(
+    OUTPUT_PATH,
+    index=False
+)</code></pre>
+
+    </div>
+
+
+    <div class="csv-reasons">
+
+      <div>
+        <span>01</span>
+
+        <div>
+          <strong>Split 고정</strong>
+
+          <p>
+            학습할 때마다 Dataset이 다시 섞이지 않도록 고정
+          </p>
         </div>
-    </section>
+      </div>
+
+      <div>
+        <span>02</span>
+
+        <div>
+          <strong>실험 조건 통일</strong>
+
+          <p>
+            Scratch와 Transfer Learning이 동일한 Split 사용
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <span>03</span>
+
+        <div>
+          <strong>재현성 확보</strong>
+
+          <p>
+            이후 실험에서도 동일한 Train / Val / Test 사용
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="strong-conclusion">
+    모든 모델을 동일한 Dataset Split에서 비교
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+25 STATUS
+========================================================= -->
+
+<section>
+
+  <h2>현재 위치 & 다음 단계</h2>
+
+  <div class="status-grid">
+
+    <div class="status-card completed">
+
+      <div class="status-title">
+        완료
+      </div>
+
+      <p>✓ Dataset 구조 분석</p>
+      <p>✓ Label 통합</p>
+      <p>✓ Group ID 정의</p>
+      <p>✓ Group Stratified Split</p>
+      <p>✓ Leakage 검증</p>
+      <p>✓ CSV 저장</p>
+
+    </div>
+
+
+    <div class="status-card current">
+
+      <div class="status-title">
+        현재
+      </div>
+
+      <div class="current-stage">
+        Dataset 준비 완료
+      </div>
+
+      <p>
+        모델 학습에 사용할<br>
+        Train / Val / Test 구성 완료
+      </p>
+
+      <div class="current-arrow">
+        ↓
+      </div>
+
+      <strong class="current-next">
+        Model Training 준비
+      </strong>
+
+    </div>
+
+
+    <div class="status-card next">
+
+      <div class="status-title">
+        다음 단계
+      </div>
+
+      <p>
+        <b>01</b>
+        전처리 파이프라인 구성
+      </p>
+
+      <p>
+        <b>02</b>
+        ResNet-50 Scratch 학습
+      </p>
+
+      <p>
+        <b>03</b>
+        Transfer Learning 학습
+      </p>
+
+      <p>
+        <b>04</b>
+        성능 비교
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+26 THANK YOU
+========================================================= -->
+
+<section class="thank-you-slide">
+
+  <div class="eyebrow">
+    Chest X-ray Pneumonia Classification
+  </div>
+
+  <h1>
+    감사합니다
+  </h1>
+
+  <div class="thank-line"></div>
+
+  <p>
+    202544030 이현서
+  </p>
+
+</section>
+
+
 </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"
+></script>
 
 <script>
-    Reveal.initialize({
-        hash: true,
-        slideNumber: false,
-        transition: 'slide',
 
-        width: 1280,
-        height: 720,
+Reveal.initialize({
 
-        margin: 0.06,
+  hash: true,
 
-        center: false
-    });
+  slideNumber: false,
+
+  transition: "slide",
+
+  width: 1280,
+
+  height: 720,
+
+  margin: 0.02,
+
+  center: false
+
+});
+
 </script>
 
 </body>

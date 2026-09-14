@@ -9,11 +9,6 @@
     --orange-soft: #fff7ed;
 }
 
-
-/* =========================================================
-GLOBAL
-========================================================= */
-
 .reveal {
     font-family:
         "Pretendard",
@@ -98,11 +93,6 @@ GLOBAL
     font-size: 14px !important;
 }
 
-
-/* =========================================================
-IMAGE
-========================================================= */
-
 .real-image {
     display: flex;
     align-items: center;
@@ -133,11 +123,6 @@ IMAGE
 .cover-image img {
     object-fit: cover;
 }
-
-
-/* =========================================================
-TITLE
-========================================================= */
 
 .title-slide {
     position: relative;
@@ -174,11 +159,6 @@ TITLE
 
     color: #475569;
 }
-
-
-/* =========================================================
-TOC
-========================================================= */
 
 .toc-grid {
     display: grid;
@@ -227,11 +207,6 @@ TOC
     font-size: 12px;
     color: var(--muted);
 }
-
-
-/* =========================================================
-PROJECT INTRO
-========================================================= */
 
 .project-intro-layout {
     margin-top: 35px;
@@ -342,11 +317,6 @@ PROJECT INTRO
     font-size: 11px;
 }
 
-
-/* =========================================================
-3 CARDS
-========================================================= */
-
 .three-card-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -400,11 +370,6 @@ PROJECT INTRO
 
     color: var(--blue);
 }
-
-
-/* =========================================================
-ROADMAP
-========================================================= */
 
 .roadmap {
     display: flex;
@@ -472,11 +437,6 @@ ROADMAP
     color: var(--muted);
 }
 
-
-/* =========================================================
-TECH
-========================================================= */
-
 .tech-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -513,11 +473,6 @@ TECH
     font-size: 17px;
     color: var(--ink);
 }
-
-
-/* =========================================================
-DATASET
-========================================================= */
 
 .dataset-layout {
     display: grid;
@@ -602,11 +557,6 @@ DATASET
     background: var(--blue-soft) !important;
     border-color: #bfdbfe !important;
 }
-
-
-/* =========================================================
-PROBLEMS
-========================================================= */
 
 .problem-grid {
     display: grid;
@@ -723,11 +673,6 @@ PROBLEMS
     color: var(--blue);
 }
 
-
-/* =========================================================
-PIPELINE
-========================================================= */
-
 .pipeline {
     display: flex;
     align-items: center;
@@ -780,11 +725,6 @@ PIPELINE
     border-color: #bfdbfe !important;
 }
 
-
-/* =========================================================
-TWO COLUMN
-========================================================= */
-
 .two-column {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -805,11 +745,6 @@ TWO COLUMN
     height: 300px;
     padding: 10px;
 }
-
-
-/* =========================================================
-MODEL
-========================================================= */
 
 .model-name {
     margin-bottom: 22px;
@@ -849,11 +784,6 @@ MODEL
 
     font-size: 14px;
 }
-
-
-/* =========================================================
-COMPARISON
-========================================================= */
 
 .comparison-grid {
     display: grid;
@@ -918,11 +848,6 @@ COMPARISON
     color: #94a3b8;
 }
 
-
-/* =========================================================
-METRICS
-========================================================= */
-
 .metric-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -962,11 +887,6 @@ METRICS
     background: var(--blue-soft);
     border-color: #bfdbfe;
 }
-
-
-/* =========================================================
-ACCURACY
-========================================================= */
 
 .patient-summary {
     display: flex;
@@ -1058,11 +978,6 @@ ACCURACY
     background: var(--orange-soft) !important;
 }
 
-
-/* =========================================================
-XAI
-========================================================= */
-
 .xai-title {
     margin-bottom: 20px;
 
@@ -1126,11 +1041,6 @@ XAI
     font-size: 13px;
 }
 
-
-/* =========================================================
-SECTION DIVIDER
-========================================================= */
-
 .section-divider {
     display: flex !important;
     flex-direction: column;
@@ -1147,11 +1057,6 @@ SECTION DIVIDER
     margin-top: 15px;
     font-size: 16px;
 }
-
-
-/* =========================================================
-DATA CHECK
-========================================================= */
 
 .progress-two-column {
     display: grid;
@@ -1295,11 +1200,6 @@ DATA CHECK
     font-weight: 800;
 }
 
-
-/* =========================================================
-CODE COMMON
-========================================================= */
-
 .code-block {
     box-sizing: border-box;
 
@@ -1334,11 +1234,6 @@ CODE COMMON
 
     white-space: pre;
 }
-
-
-/* =========================================================
-GROUP DISTRIBUTION
-========================================================= */
 
 .code-result-layout {
     display: grid;
@@ -1393,11 +1288,6 @@ GROUP DISTRIBUTION
     padding: 8px;
 }
 
-
-/* =========================================================
-ORIGINAL OVERLAP
-========================================================= */
-
 .overlap-layout {
     display: grid;
     grid-template-columns: 0.9fr 1.1fr;
@@ -1450,11 +1340,6 @@ ORIGINAL OVERLAP
     height: 330px;
     padding: 10px;
 }
-
-
-/* =========================================================
-SPLIT CHANGE
-========================================================= */
 
 .split-method-grid {
     display: grid;
@@ -1627,11 +1512,6 @@ SPLIT CHANGE
     color: var(--muted) !important;
 }
 
-
-/* =========================================================
-GROUP ID
-========================================================= */
-
 .group-definition-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1753,11 +1633,6 @@ GROUP ID
 .group-note p {
     font-size: 11px;
 }
-
-
-/* =========================================================
-EXECUTION FLOW
-========================================================= */
 
 .execution-flow {
     display: flex;
@@ -1888,11 +1763,6 @@ EXECUTION FLOW
     font-size: 10.5px;
 }
 
-
-/* =========================================================
-VALIDATION
-========================================================= */
-
 .validation-layout {
     display: grid;
     grid-template-columns: 1.15fr 0.85fr;
@@ -1952,11 +1822,6 @@ VALIDATION
     height: 210px;
     padding: 12px;
 }
-
-
-/* =========================================================
-CSV
-========================================================= */
 
 .csv-layout {
     display: grid;
@@ -2073,11 +1938,6 @@ CSV
     font-size: 11px;
 }
 
-
-/* =========================================================
-STATUS
-========================================================= */
-
 .status-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -2163,11 +2023,6 @@ STATUS
     font-size: 15px;
 }
 
-
-/* =========================================================
-THANK YOU
-========================================================= */
-
 .thank-you-slide {
     display: flex !important;
 
@@ -2197,4 +2052,23 @@ THANK YOU
 .thank-you-slide p {
     font-size: 15px;
     color: var(--muted);
+}
+
+.back-to-home {
+    position: fixed;
+    top: 18px;
+    left: 20px;
+    z-index: 1000;
+    color: #94a3b8;
+    font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    opacity: 0.65;
+    transition: color .2s ease, opacity .2s ease;
+}
+
+.back-to-home:hover {
+    color: #2563eb;
+    opacity: 1;
 }

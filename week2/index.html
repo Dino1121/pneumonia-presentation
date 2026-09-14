@@ -1,0 +1,1927 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Week 02 | Pediatric Chest X-ray Pneumonia Classification</title>
+
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/white.css">
+
+  <link rel="stylesheet"
+        href="css/custom.css">
+</head>
+
+<body>
+
+<a href="../" class="back-to-home">
+  ← 발표 목록
+</a>
+
+<div class="reveal">
+<div class="slides">
+
+<section class="title-slide">
+
+  <div class="eyebrow">
+    Chest X-ray Pneumonia Classification · Week 02
+  </div>
+
+  <h1>
+    전처리 파이프라인 구축 및<br>
+    Scratch 1차 학습
+  </h1>
+
+  <p class="subtitle">
+    Preprocessing · Data Pipeline · Scratch ResNet-50
+  </p>
+
+  <div class="title-image image-placeholder">
+    Chest X-ray
+  </div>
+
+  <div class="student-info">
+    202544030 이현서
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    WEEK 02
+  </div>
+
+  <h2>
+    목차
+  </h2>
+
+  <div class="toc-grid">
+
+    <div class="toc-card">
+      <span>01</span>
+
+      <strong>
+        프로젝트 리마인드
+      </strong>
+
+      <small>
+        프로젝트 목표와 전체 흐름
+      </small>
+    </div>
+
+    <div class="toc-card">
+      <span>02</span>
+
+      <strong>
+        Week 1 진행사항
+      </strong>
+
+      <small>
+        Dataset 재구성과 Leakage 검증
+      </small>
+    </div>
+
+    <div class="toc-card">
+      <span>03</span>
+
+      <strong>
+        Preprocessing & Data Pipeline
+      </strong>
+
+      <small>
+        전처리 구현과 학습 데이터 공급 구조
+      </small>
+    </div>
+
+    <div class="toc-card">
+      <span>04</span>
+
+      <strong>
+        Scratch 1차 학습
+      </strong>
+
+      <small>
+        Baseline 모델과 학습 Pipeline 구축
+      </small>
+    </div>
+
+    <div class="toc-card">
+      <span>05</span>
+
+      <strong>
+        실험 결과
+      </strong>
+
+      <small>
+        20 Epoch 학습 결과와 관찰 사항
+      </small>
+    </div>
+
+    <div class="toc-card">
+      <span>06</span>
+
+      <strong>
+        현재 진행상황
+      </strong>
+
+      <small>
+        현재 위치와 다음 단계
+      </small>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    PROJECT REMIND
+  </div>
+
+  <h2>
+    프로젝트 리마인드
+  </h2>
+
+  <div class="project-flow">
+
+    <div class="flow-box">
+      <span class="flow-label">
+        INPUT
+      </span>
+
+      <strong>
+        Pediatric<br>
+        Chest X-ray
+      </strong>
+    </div>
+
+    <div class="flow-arrow">
+      →
+    </div>
+
+    <div class="flow-box">
+      <span class="flow-label">
+        MODEL
+      </span>
+
+      <strong>
+        ResNet-50
+      </strong>
+    </div>
+
+    <div class="flow-arrow">
+      →
+    </div>
+
+    <div class="flow-box">
+      <span class="flow-label">
+        CLASSIFICATION
+      </span>
+
+      <strong>
+        NORMAL<br>
+        PNEUMONIA
+      </strong>
+    </div>
+
+    <div class="flow-arrow">
+      →
+    </div>
+
+    <div class="flow-box">
+      <span class="flow-label">
+        XAI
+      </span>
+
+      <strong>
+        Grad-CAM++
+      </strong>
+    </div>
+
+  </div>
+
+  <div class="project-summary-grid">
+
+    <div class="summary-card">
+      <span>01</span>
+
+      <div>
+        <strong>
+          Classification
+        </strong>
+
+        <p>
+          소아 흉부 X-ray에서 폐렴 여부 이진 분류
+        </p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <span>02</span>
+
+      <div>
+        <strong>
+          Experiment
+        </strong>
+
+        <p>
+          ResNet-50 Scratch와 Transfer Learning 비교
+        </p>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <span>03</span>
+
+      <div>
+        <strong>
+          Explainability
+        </strong>
+
+        <p>
+          Grad-CAM++를 이용한 판단 근거 시각화
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    WEEK 01
+  </div>
+
+  <h2>
+    Week 1 진행사항
+  </h2>
+
+  <div class="week1-layout">
+
+    <div class="week1-card">
+
+      <span>
+        01
+      </span>
+
+      <strong>
+        Dataset 분석
+      </strong>
+
+      <p>
+        기존 Train / Validation / Test 구조와
+        파일명 패턴 확인
+      </p>
+
+    </div>
+
+    <div class="week-arrow">
+      →
+    </div>
+
+    <div class="week1-card">
+
+      <span>
+        02
+      </span>
+
+      <strong>
+        Group ID 정의
+      </strong>
+
+      <p>
+        동일 환자로 추정되는 이미지를
+        하나의 Group으로 관리
+      </p>
+
+    </div>
+
+    <div class="week-arrow">
+      →
+    </div>
+
+    <div class="week1-card">
+
+      <span>
+        03
+      </span>
+
+      <strong>
+        Group Split
+      </strong>
+
+      <p>
+        StratifiedGroupKFold 기반
+        Train / Val / Test 재구성
+      </p>
+
+    </div>
+
+    <div class="week-arrow">
+      →
+    </div>
+
+    <div class="week1-card highlight">
+
+      <span>
+        04
+      </span>
+
+      <strong>
+        Leakage 검증
+      </strong>
+
+      <p>
+        Split 간 Group 중복이 없음을 확인
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="week1-result">
+
+    <div>
+      <span>
+        TRAIN
+      </span>
+
+      <strong>
+        4,686
+      </strong>
+    </div>
+
+    <div>
+      <span>
+        VALIDATION
+      </span>
+
+      <strong>
+        585
+      </strong>
+    </div>
+
+    <div>
+      <span>
+        TEST
+      </span>
+
+      <strong>
+        585
+      </strong>
+    </div>
+
+  </div>
+
+  <div class="week1-csv-note">
+
+    <div>
+      <span>
+        OUTPUT
+      </span>
+
+      <strong>
+        group_split.csv
+      </strong>
+    </div>
+
+    <p>
+      재구성한 Split 정보와 각 이미지 경로를 CSV 파일로 저장해
+      이후 학습 Pipeline에서 사용할 수 있도록 구성했습니다.
+    </p>
+
+  </div>
+
+</section>
+
+
+<section class="section-transition">
+
+  <div class="section-number">
+    WEEK 02
+  </div>
+
+  <h1>
+    이번 주 진행 내용
+  </h1>
+
+  <div class="section-line"></div>
+
+  <div class="section-topics">
+
+    <span>
+      Preprocessing & Data Pipeline
+    </span>
+
+    <span>
+      Scratch ResNet-50 Training
+    </span>
+
+    <span>
+      Experiment & Evaluation
+    </span>
+
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    PREPROCESSING
+  </div>
+
+  <h2>
+    Preprocessing Pipeline
+  </h2>
+
+  <div class="resize-example-layout">
+
+    <div class="resize-example-card">
+
+      <div class="original-shape">
+        <div class="lung-demo normal">
+          <div class="lung left"></div>
+          <div class="lung right"></div>
+        </div>
+      </div>
+
+      <strong>
+        Original Image
+      </strong>
+
+      <p>
+        X-ray마다 해상도와 가로세로 비율이 다르기 때문에
+        모델 입력 크기를 통일하는 과정이 필요합니다.
+      </p>
+
+    </div>
+
+    <div class="resize-arrow">
+      →
+    </div>
+
+    <div class="resize-example-card warning">
+
+      <div class="forced-shape">
+        <div class="lung-demo distorted">
+          <div class="lung left"></div>
+          <div class="lung right"></div>
+        </div>
+      </div>
+
+      <strong>
+        Forced Resize
+      </strong>
+
+      <p>
+        원본 비율을 무시하고 224×224로 강제 변환하면
+        흉곽과 폐의 형태가 왜곡될 수 있습니다.
+      </p>
+
+    </div>
+
+    <div class="resize-arrow">
+      →
+    </div>
+
+    <div class="resize-example-card safe">
+
+      <div class="padding-demo">
+        <div class="padding-top"></div>
+
+        <div class="padded-image">
+          <div class="lung-demo normal">
+            <div class="lung left"></div>
+            <div class="lung right"></div>
+          </div>
+        </div>
+
+        <div class="padding-bottom"></div>
+      </div>
+
+      <strong>
+        Resize + Padding
+      </strong>
+
+      <p>
+        원본 비율을 유지한 채 Resize하고,
+        남는 공간에 Padding을 추가하여 224×224로 통일합니다.
+      </p>
+
+    </div>
+
+  </div>
+
+  <div class="preprocess-info-grid compact">
+
+    <div class="info-card">
+      <strong>
+        224 × 224
+      </strong>
+
+      <p>
+        Aspect Ratio를 유지하여 Resize한 뒤 Zero Padding 적용
+      </p>
+    </div>
+
+    <div class="info-card">
+      <strong>
+        Rotation ±10°
+      </strong>
+
+      <p>
+        작은 촬영 회전에 대한 Robustness 확보
+      </p>
+    </div>
+
+    <div class="info-card">
+      <strong>
+        Horizontal Flip 제외
+      </strong>
+
+      <p>
+        좌우 해부학적 위치를 인위적으로 반전시키지 않음
+      </p>
+    </div>
+
+    <div class="info-card">
+      <strong>
+        ImageNet Normalization
+      </strong>
+
+      <p>
+        Scratch와 Transfer Learning의 입력 조건 통일
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+<section>
+
+  <div class="eyebrow">
+    PREPROCESSING EXAMPLE
+  </div>
+
+  <h2>
+    실제 X-ray 전처리 결과
+  </h2>
+
+  <div class="preprocessing-example-grid">
+
+    <div class="preprocessing-example-card">
+
+      <div class="preprocessing-example-image">
+        <img
+          src="images/preprocessing_original.png"
+          alt="Original X-ray">
+      </div>
+
+      <strong>
+        Original
+      </strong>
+
+      <small>
+        원본 Chest X-ray
+      </small>
+
+    </div>
+
+    <div class="preprocessing-example-arrow">
+      →
+    </div>
+
+    <div class="preprocessing-example-card">
+
+      <div class="preprocessing-example-image">
+        <img
+          src="images/preprocessing_resize_padding.png"
+          alt="Resize and Padding">
+      </div>
+
+      <strong>
+        Resize + Padding
+      </strong>
+
+      <small>
+        Aspect Ratio 유지 · 224×224
+      </small>
+
+    </div>
+
+    <div class="preprocessing-example-arrow">
+      →
+    </div>
+
+    <div class="preprocessing-example-card">
+
+      <div class="preprocessing-example-image">
+        <img
+          src="images/preprocessing_rotation.png"
+          alt="Rotation Augmentation">
+      </div>
+
+      <strong>
+        Rotation
+      </strong>
+
+      <small>
+        Random Rotation ±10°
+      </small>
+
+    </div>
+
+    <div class="preprocessing-example-arrow">
+      →
+    </div>
+
+    <div class="preprocessing-example-card highlight">
+
+      <div class="preprocessing-example-image">
+        <img
+          src="images/preprocessing_final.png"
+          alt="Final Preprocessed X-ray">
+      </div>
+
+      <strong>
+        Final Input
+      </strong>
+
+      <small>
+        Model Input · 3×224×224
+      </small>
+
+    </div>
+
+  </div>
+
+  <div class="preprocessing-example-note">
+
+    <span>
+      실제 적용 결과
+    </span>
+
+    <p>
+      동일한 X-ray에 전처리 Pipeline을 적용하여
+      원본 비율을 유지하면서 모델 입력 크기를 통일했습니다.
+    </p>
+
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    DATA PIPELINE
+  </div>
+
+  <h2>
+    Data Pipeline
+  </h2>
+
+  <div class="csv-remind-box">
+
+    <div class="csv-tag">
+      Week 1
+    </div>
+
+    <div class="csv-file">
+      group_split.csv
+    </div>
+
+    <div class="csv-fields">
+      filepath · label · group_id · split
+    </div>
+
+  </div>
+
+  <div class="data-pipeline-layout">
+
+    <div class="data-pipeline-step">
+
+      <div class="step-title">
+        01
+      </div>
+
+      <strong>
+        CSV에서 대상 확인
+      </strong>
+
+      <p>
+        어떤 이미지를 사용할지와
+        정답 Label, Split 정보를 확인합니다.
+      </p>
+
+      <small>
+        group_split.csv
+      </small>
+
+    </div>
+
+    <div class="data-pipeline-arrow">
+      →
+    </div>
+
+    <div class="data-pipeline-step">
+
+      <div class="step-title">
+        02
+      </div>
+
+      <strong>
+        이미지 1장 불러오기
+      </strong>
+
+      <p>
+        CSV에 저장된 경로를 이용해
+        실제 X-ray 이미지와 Label을 가져옵니다.
+      </p>
+
+      <small>
+        dataset.py
+      </small>
+
+    </div>
+
+    <div class="data-pipeline-arrow">
+      →
+    </div>
+
+    <div class="data-pipeline-step">
+
+      <div class="step-title">
+        03
+      </div>
+
+      <strong>
+        전처리 적용
+      </strong>
+
+      <p>
+        Resize, Padding, Rotation,
+        Normalization을 적용합니다.
+      </p>
+
+      <small>
+        transforms.py
+      </small>
+
+    </div>
+
+    <div class="data-pipeline-arrow">
+      →
+    </div>
+
+    <div class="data-pipeline-step highlight">
+
+      <div class="step-title">
+        04
+      </div>
+
+      <strong>
+        여러 장을 묶어서 전달
+      </strong>
+
+      <p>
+        전처리가 끝난 이미지 여러 장을
+        하나의 Batch로 묶어 모델에 공급합니다.
+      </p>
+
+      <small>
+        dataloader.py
+      </small>
+
+    </div>
+
+  </div>
+
+  <div class="batch-explain-layout">
+
+    <div class="batch-stack">
+
+      <div class="mini-image">
+        X-ray 1
+      </div>
+
+      <div class="mini-image">
+        X-ray 2
+      </div>
+
+      <div class="mini-image">
+        ...
+      </div>
+
+      <div class="mini-image">
+        X-ray 32
+      </div>
+
+    </div>
+
+    <div class="batch-arrow">
+      →
+    </div>
+
+    <div class="batch-output">
+
+      <span>
+        Batch Size = 32
+      </span>
+
+      <strong>
+        [32, 3, 224, 224]
+      </strong>
+
+      <p>
+        X-ray 32장을 한 번에 모델로 전달
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    SCRATCH BASELINE
+  </div>
+
+  <h2>
+    1차 Baseline 모델
+  </h2>
+
+  <div class="baseline-layout">
+
+    <div class="baseline-model">
+
+      <div class="model-name">
+        ResNet-50
+      </div>
+
+      <div class="model-flow">
+
+        <div>
+          Input
+          <small>
+            3 × 224 × 224
+          </small>
+        </div>
+
+        <span>
+          →
+        </span>
+
+        <div>
+          ResNet-50
+          <small>
+            weights = None
+          </small>
+        </div>
+
+        <span>
+          →
+        </span>
+
+        <div>
+          Output
+          <small>
+            2 Classes
+          </small>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="baseline-description">
+
+      <div class="baseline-point">
+
+        <span>
+          01
+        </span>
+
+        <div>
+          <strong>
+            Pretrained Weight 미사용
+          </strong>
+
+          <p>
+            ImageNet 사전학습 Weight 없이
+            Random Initialization부터 학습
+          </p>
+        </div>
+
+      </div>
+
+      <div class="baseline-point">
+
+        <span>
+          02
+        </span>
+
+        <div>
+          <strong>
+            동일한 ResNet-50 구조
+          </strong>
+
+          <p>
+            이후 Transfer Learning 모델과
+            구조를 동일하게 유지
+          </p>
+        </div>
+
+      </div>
+
+      <div class="baseline-point">
+
+        <span>
+          03
+        </span>
+
+        <div>
+          <strong>
+            비교 기준 확보
+          </strong>
+
+          <p>
+            Transfer Learning 적용 전
+            Scratch 모델의 1차 성능 확인
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="baseline-warning">
+    현재 결과는 <strong>1차 Baseline 실험</strong>이며,
+    최종 Scratch 설정은 추가 실험을 통해 조정할 예정입니다.
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    TRAINING CONFIGURATION
+  </div>
+
+  <h2>
+    1차 학습 설정
+  </h2>
+
+  <div class="config-layout">
+
+    <div class="config-table">
+
+      <div class="config-row">
+        <span>
+          Model
+        </span>
+
+        <strong>
+          ResNet-50 Scratch
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Pretrained
+        </span>
+
+        <strong>
+          None
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Optimizer
+        </span>
+
+        <strong>
+          AdamW
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Learning Rate
+        </span>
+
+        <strong>
+          0.001
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Weight Decay
+        </span>
+
+        <strong>
+          0.0001
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="config-table">
+
+      <div class="config-row">
+        <span>
+          Batch Size
+        </span>
+
+        <strong>
+          32
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Epoch
+        </span>
+
+        <strong>
+          20
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Loss
+        </span>
+
+        <strong>
+          CrossEntropyLoss
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Positive Class
+        </span>
+
+        <strong>
+          PNEUMONIA
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Device
+        </span>
+
+        <strong>
+          RTX 3070
+        </strong>
+      </div>
+
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    우선 기본 설정으로 1차 학습을 진행한 뒤,
+    Validation 결과를 바탕으로 학습 조건을 추가 조정합니다.
+  </p>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    EXPERIMENT MANAGEMENT
+  </div>
+
+  <h2>
+    실험 관리 및 결과 저장
+  </h2>
+
+  <div class="experiment-layout">
+
+    <div class="folder-structure">
+
+      <div class="folder-title">
+        exp_002/
+      </div>
+
+      <div class="folder-file">
+        <span>
+          JSON
+        </span>
+
+        config.json
+      </div>
+
+      <div class="folder-file">
+        <span>
+          CSV
+        </span>
+
+        history.csv
+      </div>
+
+      <div class="folder-file">
+        <span>
+          PTH
+        </span>
+
+        best_model.pth
+      </div>
+
+      <div class="folder-file">
+        <span>
+          PNG
+        </span>
+
+        loss_curve.png
+      </div>
+
+      <div class="folder-file">
+        <span>
+          PNG
+        </span>
+
+        validation_metrics.png
+      </div>
+
+    </div>
+
+    <div class="experiment-description">
+
+      <div class="experiment-item">
+
+        <strong>
+          config.json
+        </strong>
+
+        <p>
+          모델, Optimizer, Learning Rate,
+          Batch Size 등 실험 설정 저장
+        </p>
+
+      </div>
+
+      <div class="experiment-item">
+
+        <strong>
+          history.csv
+        </strong>
+
+        <p>
+          Epoch별 Train / Validation Loss와
+          평가 지표 저장
+        </p>
+
+      </div>
+
+      <div class="experiment-item">
+
+        <strong>
+          best_model.pth
+        </strong>
+
+        <p>
+          Validation F1-score가 가장 높은
+          Checkpoint 자동 저장
+        </p>
+
+      </div>
+
+      <div class="experiment-item">
+
+        <strong>
+          Result Graph
+        </strong>
+
+        <p>
+          Loss와 Validation Metric의 변화를
+          그래프로 시각화
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    반복되는 실험에서 <strong>어떤 설정으로 어떤 결과가 나왔는지</strong>
+    추적할 수 있도록 자동 저장 구조를 구성했습니다.
+  </p>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    TRAINING PROCESS
+  </div>
+
+  <h2>
+    모델 학습 및 검증 과정
+  </h2>
+
+  <div class="simple-train-layout">
+
+    <div class="simple-process-card">
+
+      <div class="process-badge">
+        TRAINING
+      </div>
+
+      <h3>
+        모델이 학습하는 과정
+      </h3>
+
+      <div class="simple-flow">
+
+        <div>
+          여러 장의 X-ray 입력
+        </div>
+
+        <span>
+          ↓
+        </span>
+
+        <div>
+          NORMAL / PNEUMONIA 예측
+        </div>
+
+        <span>
+          ↓
+        </span>
+
+        <div>
+          실제 정답과 비교
+        </div>
+
+        <span>
+          ↓
+        </span>
+
+        <div class="active">
+          틀린 정도를 바탕으로 모델 내부 값 수정
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="simple-process-card">
+
+      <div class="process-badge">
+        VALIDATION
+      </div>
+
+      <h3>
+        학습 중 성능을 확인하는 과정
+      </h3>
+
+      <div class="simple-flow">
+
+        <div>
+          Validation X-ray 입력
+        </div>
+
+        <span>
+          ↓
+        </span>
+
+        <div>
+          NORMAL / PNEUMONIA 예측
+        </div>
+
+        <span>
+          ↓
+        </span>
+
+        <div>
+          실제 정답과 비교
+        </div>
+
+        <span>
+          ↓
+        </span>
+
+        <div class="active">
+          Accuracy · Recall · F1 · AUROC 계산
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    Training에서는 모델의 값을 수정하고,
+    Validation에서는 <strong>모델을 수정하지 않고 현재 성능만 확인</strong>합니다.
+  </p>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    SMOKE TEST
+  </div>
+
+  <h2>
+    Smoke Test
+  </h2>
+
+  <div class="smoke-main">
+
+    <div class="smoke-epoch">
+
+      <span>
+        1 Epoch
+      </span>
+
+      <strong>
+        전체 학습 Pipeline 동작 확인
+      </strong>
+
+      <p>
+        본격적인 20 Epoch 학습에 앞서
+        1 Epoch만 실행하여 전체 과정이 정상적으로 연결되는지 확인했습니다.
+      </p>
+
+    </div>
+
+    <div class="smoke-check-grid">
+
+      <div>
+        <span>✓</span>
+        Dataset Load
+      </div>
+
+      <div>
+        <span>✓</span>
+        Preprocessing
+      </div>
+
+      <div>
+        <span>✓</span>
+        Batch 생성
+      </div>
+
+      <div>
+        <span>✓</span>
+        GPU 학습
+      </div>
+
+      <div>
+        <span>✓</span>
+        Validation
+      </div>
+
+      <div>
+        <span>✓</span>
+        Metric 계산
+      </div>
+
+      <div>
+        <span>✓</span>
+        Checkpoint 저장
+      </div>
+
+      <div>
+        <span>✓</span>
+        History 저장
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="verification-result">
+    전체 과정 정상 동작 확인 후
+    <strong>20 Epoch 1차 학습</strong> 진행
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    EXPERIMENT RESULT
+  </div>
+
+  <h2>
+    20 Epoch 학습 결과
+  </h2>
+
+  <div class="result-graph-grid">
+
+    <div class="result-graph">
+
+      <div class="graph-placeholder">
+        Loss Curve
+      </div>
+
+      <strong>
+        Train / Validation Loss
+      </strong>
+
+    </div>
+
+    <div class="result-graph">
+
+      <div class="graph-placeholder">
+        Validation Metrics
+      </div>
+
+      <strong>
+        F1 · Recall · AUROC
+      </strong>
+
+    </div>
+
+  </div>
+
+  <div class="result-observation-grid">
+
+    <div class="observation-card">
+
+      <span>
+        01
+      </span>
+
+      <div>
+        <strong>
+          Train Loss 감소
+        </strong>
+
+        <p>
+          학습이 진행되면서 Train Loss는
+          지속적으로 감소
+        </p>
+      </div>
+
+    </div>
+
+    <div class="observation-card">
+
+      <span>
+        02
+      </span>
+
+      <div>
+        <strong>
+          Validation 변동
+        </strong>
+
+        <p>
+          Validation Loss와 Metric에서
+          Epoch별 변동 확인
+        </p>
+      </div>
+
+    </div>
+
+    <div class="observation-card">
+
+      <span>
+        03
+      </span>
+
+      <div>
+        <strong>
+          추가 실험 필요
+        </strong>
+
+        <p>
+          Learning Rate와 학습 설정에 따른
+          변화 추가 확인 예정
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    BASELINE PERFORMANCE
+  </div>
+
+  <h2>
+    1차 Baseline 성능
+  </h2>
+
+  <div class="performance-highlight">
+
+    <div>
+      <span>
+        BEST VALIDATION F1
+      </span>
+
+      <strong>
+        96.71%
+      </strong>
+
+      <small>
+        Epoch 12
+      </small>
+    </div>
+
+  </div>
+
+  <div class="metric-result-grid">
+
+    <div class="metric-result-card">
+
+      <span>
+        Accuracy
+      </span>
+
+      <strong>
+        95.21%
+      </strong>
+
+    </div>
+
+    <div class="metric-result-card">
+
+      <span>
+        Recall
+      </span>
+
+      <strong>
+        96.49%
+      </strong>
+
+    </div>
+
+    <div class="metric-result-card">
+
+      <span>
+        Precision
+      </span>
+
+      <strong>
+        96.94%
+      </strong>
+
+    </div>
+
+    <div class="metric-result-card highlight">
+
+      <span>
+        F1-score
+      </span>
+
+      <strong>
+        96.71%
+      </strong>
+
+    </div>
+
+    <div class="metric-result-card">
+
+      <span>
+        AUROC
+      </span>
+
+      <strong>
+        98.87%
+      </strong>
+
+    </div>
+
+  </div>
+
+  <div class="validation-warning">
+    현재 수치는 <strong>Validation Dataset 기준</strong>이며,
+    최종 Test Dataset 평가는 아직 수행하지 않았습니다.
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    TRAINING OBSERVATION
+  </div>
+
+  <h2>
+    GPU 사용률 관찰
+  </h2>
+
+  <div class="gpu-layout">
+
+    <div class="gpu-image image-placeholder">
+      GPU Usage Screenshot
+    </div>
+
+    <div class="gpu-description">
+
+      <div class="gpu-point">
+
+        <span>
+          01
+        </span>
+
+        <div>
+          <strong>
+            GPU 대기 구간 관찰
+          </strong>
+
+          <p>
+            학습 중 GPU 사용률이 지속적으로
+            유지되지 않는 구간 확인
+          </p>
+        </div>
+
+      </div>
+
+      <div class="gpu-point">
+
+        <span>
+          02
+        </span>
+
+        <div>
+          <strong>
+            현재 num_workers = 0
+          </strong>
+
+          <p>
+            Image Loading과 Transform이
+            Main Process에서 순차적으로 수행
+          </p>
+        </div>
+
+      </div>
+
+      <div class="gpu-point">
+
+        <span>
+          03
+        </span>
+
+        <div>
+          <strong>
+            입력 Pipeline 병목 가능성
+          </strong>
+
+          <p>
+            DataLoader 설정을 조정하면서
+            GPU 사용률과 Epoch 시간을 비교할 예정
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="gpu-note">
+    현재 단계에서는 원인을 확정하지 않고,
+    <strong>DataLoader 설정에 따른 변화</strong>를 추가 실험합니다.
+  </div>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
+    CURRENT STATUS
+  </div>
+
+  <h2>
+    현재 진행상황 및 다음 단계
+  </h2>
+
+  <div class="progress-roadmap">
+
+    <div class="progress-item complete">
+
+      <span>
+        ✓
+      </span>
+
+      <strong>
+        Dataset 재구성
+      </strong>
+
+      <small>
+        Week 1
+      </small>
+
+    </div>
+
+    <div class="progress-arrow">
+      →
+    </div>
+
+    <div class="progress-item complete">
+
+      <span>
+        ✓
+      </span>
+
+      <strong>
+        Preprocessing
+      </strong>
+
+      <small>
+        Week 2
+      </small>
+
+    </div>
+
+    <div class="progress-arrow">
+      →
+    </div>
+
+    <div class="progress-item complete">
+
+      <span>
+        ✓
+      </span>
+
+      <strong>
+        Scratch 1차 학습
+      </strong>
+
+      <small>
+        Week 2
+      </small>
+
+    </div>
+
+    <div class="progress-arrow">
+      →
+    </div>
+
+    <div class="progress-item current">
+
+      <span>
+        NOW
+      </span>
+
+      <strong>
+        Scratch 보완
+      </strong>
+
+      <small>
+        Training Setting
+      </small>
+
+    </div>
+
+  </div>
+
+  <div class="next-step-grid">
+
+    <div class="next-step-card">
+
+      <span>
+        01
+      </span>
+
+      <strong>
+        Scratch 설정 보완
+      </strong>
+
+      <p>
+        Learning Rate 및
+        DataLoader 설정 추가 실험
+      </p>
+
+    </div>
+
+    <div class="next-step-card">
+
+      <span>
+        02
+      </span>
+
+      <strong>
+        Transfer Learning
+      </strong>
+
+      <p>
+        ImageNet Pretrained ResNet-50
+        학습 진행
+      </p>
+
+    </div>
+
+    <div class="next-step-card">
+
+      <span>
+        03
+      </span>
+
+      <strong>
+        성능 비교
+      </strong>
+
+      <p>
+        Scratch와 Transfer Learning
+        성능 비교
+      </p>
+
+    </div>
+
+    <div class="next-step-card">
+
+      <span>
+        04
+      </span>
+
+      <strong>
+        Final Evaluation
+      </strong>
+
+      <p>
+        최종 모델 Test 평가 및
+        Grad-CAM++ 적용
+      </p>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="thank-you-slide">
+
+  <div class="eyebrow">
+    Chest X-ray Pneumonia Classification
+  </div>
+
+  <h1>
+    감사합니다
+  </h1>
+
+  <div class="thank-line"></div>
+
+  <p>
+    202544030 이현서
+  </p>
+
+</section>
+
+</div>
+</div>
+
+<script
+  src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js">
+</script>
+
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: false,
+  transition: "slide",
+  width: 1280,
+  height: 720,
+  margin: 0.02,
+  center: false
+});
+</script>
+
+</body>
+</html>

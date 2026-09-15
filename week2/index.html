@@ -41,8 +41,8 @@
     Preprocessing · Data Pipeline · Scratch ResNet-50
   </p>
 
-  <div class="title-image image-placeholder">
-    Chest X-ray
+  <div class="title-image title-xray-image">
+    <img src="images/original.png" alt="Pediatric Chest X-ray">
   </div>
 
   <div class="student-info">
@@ -448,129 +448,330 @@
     Preprocessing Pipeline
   </h2>
 
-  <div class="resize-example-layout">
+  <div class="preprocess-flow">
 
-    <div class="resize-example-card">
+    <div class="preprocess-step">
 
-      <div class="original-shape">
-        <div class="lung-demo normal">
-          <div class="lung left"></div>
-          <div class="lung right"></div>
-        </div>
+      <div class="preprocess-step-number">
+        01
+      </div>
+
+      <div class="preprocess-step-visual original-input">
+        X-ray
       </div>
 
       <strong>
         Original Image
       </strong>
 
-      <p>
-        X-ray마다 해상도와 가로세로 비율이 다르기 때문에
-        모델 입력 크기를 통일하는 과정이 필요합니다.
-      </p>
+      <small>
+        다양한 해상도와 비율
+      </small>
 
     </div>
 
-    <div class="resize-arrow">
+    <div class="preprocess-flow-arrow">
       →
     </div>
 
-    <div class="resize-example-card warning">
+    <div class="preprocess-step">
 
-      <div class="forced-shape">
-        <div class="lung-demo distorted">
-          <div class="lung left"></div>
-          <div class="lung right"></div>
-        </div>
+      <div class="preprocess-step-number">
+        02
+      </div>
+
+      <div class="preprocess-step-visual resize-input">
+        X-ray
       </div>
 
       <strong>
-        Forced Resize
+        Resize
       </strong>
 
-      <p>
-        원본 비율을 무시하고 224×224로 강제 변환하면
-        흉곽과 폐의 형태가 왜곡될 수 있습니다.
-      </p>
+      <small>
+        Aspect Ratio 유지
+      </small>
 
     </div>
 
-    <div class="resize-arrow">
+    <div class="preprocess-flow-arrow">
       →
     </div>
 
-    <div class="resize-example-card safe">
+    <div class="preprocess-step">
 
-      <div class="padding-demo">
-        <div class="padding-top"></div>
+      <div class="preprocess-step-number">
+        03
+      </div>
 
-        <div class="padded-image">
-          <div class="lung-demo normal">
-            <div class="lung left"></div>
-            <div class="lung right"></div>
-          </div>
+      <div class="preprocess-step-visual padding-input">
+
+        <div class="padding-space"></div>
+
+        <div class="padding-xray">
+          X-ray
         </div>
 
-        <div class="padding-bottom"></div>
+        <div class="padding-space"></div>
+
       </div>
 
       <strong>
-        Resize + Padding
+        Zero Padding
       </strong>
 
-      <p>
-        원본 비율을 유지한 채 Resize하고,
-        남는 공간에 Padding을 추가하여 224×224로 통일합니다.
-      </p>
+      <small>
+        224 × 224 · value = 0
+      </small>
+
+    </div>
+
+    <div class="preprocess-flow-arrow">
+      →
+    </div>
+
+    <div class="preprocess-step">
+
+      <div class="preprocess-step-number">
+        04
+      </div>
+
+      <div class="preprocess-step-visual rotation-input">
+        X-ray
+      </div>
+
+      <strong>
+        Rotation ±10°
+      </strong>
+
+      <small>
+        Train Only · fill = 0
+      </small>
+
+    </div>
+
+    <div class="preprocess-flow-arrow">
+      →
+    </div>
+
+    <div class="preprocess-step">
+
+      <div class="preprocess-step-number">
+        05
+      </div>
+
+      <div class="preprocess-step-visual normalization-input">
+
+        <span>
+          x - mean
+        </span>
+
+        <div></div>
+
+        <span>
+          std
+        </span>
+
+      </div>
+
+      <strong>
+        ImageNet Normalization
+      </strong>
+
+      <small>
+        동일한 입력 정규화
+      </small>
+
+    </div>
+
+    <div class="preprocess-flow-arrow">
+      →
+    </div>
+
+    <div class="preprocess-step highlight">
+
+      <div class="preprocess-step-number">
+        06
+      </div>
+
+      <div class="preprocess-step-visual tensor-input">
+
+        <div></div>
+        <div></div>
+        <div></div>
+
+      </div>
+
+      <strong>
+        Model Input
+      </strong>
+
+      <small>
+        3 × 224 × 224 Tensor
+      </small>
 
     </div>
 
   </div>
 
-  <div class="preprocess-info-grid compact">
 
-    <div class="info-card">
-      <strong>
-        224 × 224
-      </strong>
+  <div class="preprocess-bottom-layout">
 
-      <p>
-        Aspect Ratio를 유지하여 Resize한 뒤 Zero Padding 적용
-      </p>
+    <div class="aspect-ratio-panel">
+
+      <div class="aspect-ratio-heading">
+
+        <div>
+          <span>
+            WHY RESIZE + PADDING?
+          </span>
+
+          <strong>
+            원본 Aspect Ratio 유지
+          </strong>
+        </div>
+
+        <p>
+          224×224로 강제 Resize하면 영상의 비율이 변하면서
+          흉곽과 폐의 형태가 왜곡될 수 있습니다.
+        </p>
+
+      </div>
+
+      <div class="aspect-ratio-comparison">
+
+        <div class="aspect-example">
+
+          <div class="aspect-shape original">
+
+            <div class="aspect-lung left"></div>
+            <div class="aspect-lung right"></div>
+
+          </div>
+
+          <div>
+            <strong>
+              Original
+            </strong>
+
+            <small>
+              원본 비율
+            </small>
+          </div>
+
+        </div>
+
+        <div class="aspect-arrow">
+          →
+        </div>
+
+        <div class="aspect-example warning">
+
+          <div class="aspect-shape forced">
+
+            <div class="aspect-lung left"></div>
+            <div class="aspect-lung right"></div>
+
+          </div>
+
+          <div>
+            <strong>
+              Forced Resize
+            </strong>
+
+            <small>
+              형태 왜곡 가능
+            </small>
+          </div>
+
+        </div>
+
+        <div class="aspect-vs">
+          VS
+        </div>
+
+        <div class="aspect-example safe">
+
+          <div class="aspect-padding">
+
+            <div class="aspect-padding-space"></div>
+
+            <div class="aspect-shape padded">
+
+              <div class="aspect-lung left"></div>
+              <div class="aspect-lung right"></div>
+
+            </div>
+
+            <div class="aspect-padding-space"></div>
+
+          </div>
+
+          <div>
+            <strong>
+              Resize + Padding
+            </strong>
+
+            <small>
+              비율 유지 · Zero Padding
+            </small>
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
 
-    <div class="info-card">
-      <strong>
-        Rotation ±10°
-      </strong>
 
-      <p>
-        작은 촬영 회전에 대한 Robustness 확보
-      </p>
-    </div>
+    <div class="preprocess-policy-panel">
 
-    <div class="info-card">
-      <strong>
-        Horizontal Flip 제외
-      </strong>
+      <span>
+        PREPROCESSING POLICY
+      </span>
 
-      <p>
-        좌우 해부학적 위치를 인위적으로 반전시키지 않음
-      </p>
-    </div>
+      <div class="preprocess-policy-item">
 
-    <div class="info-card">
-      <strong>
-        ImageNet Normalization
-      </strong>
+        <strong>
+          Rotation ±10°
+        </strong>
 
-      <p>
-        Scratch와 Transfer Learning의 입력 조건 통일
-      </p>
+        <small>
+          Train 데이터에만 적용
+        </small>
+
+      </div>
+
+      <div class="preprocess-policy-item">
+
+        <strong>
+          Horizontal Flip 제외
+        </strong>
+
+        <small>
+          좌우 해부학적 위치 보존
+        </small>
+
+      </div>
+
+      <div class="preprocess-policy-item">
+
+        <strong>
+          ImageNet Normalization
+        </strong>
+
+        <small>
+          Scratch / Transfer Learning 입력 조건 통일
+        </small>
+
+      </div>
+
     </div>
 
   </div>
 
 </section>
+
 
 <section>
 
@@ -588,7 +789,7 @@
 
       <div class="preprocessing-example-image">
         <img
-          src="images/preprocessing_original.png"
+          src="images/original.png"
           alt="Original X-ray">
       </div>
 
@@ -610,7 +811,7 @@
 
       <div class="preprocessing-example-image">
         <img
-          src="images/preprocessing_resize_padding.png"
+          src="images/resize+padding.png"
           alt="Resize and Padding">
       </div>
 
@@ -632,7 +833,7 @@
 
       <div class="preprocessing-example-image">
         <img
-          src="images/preprocessing_rotation.png"
+          src="images/random_rotation.png"
           alt="Rotation Augmentation">
       </div>
 
@@ -641,7 +842,7 @@
       </strong>
 
       <small>
-        Random Rotation ±10°
+        Random Rotation ±10° · Train Only
       </small>
 
     </div>
@@ -654,7 +855,7 @@
 
       <div class="preprocessing-example-image">
         <img
-          src="images/preprocessing_final.png"
+          src="images/final_train_transform.png"
           alt="Final Preprocessed X-ray">
       </div>
 
@@ -986,136 +1187,6 @@
 <section>
 
   <div class="eyebrow">
-    TRAINING CONFIGURATION
-  </div>
-
-  <h2>
-    1차 학습 설정
-  </h2>
-
-  <div class="config-layout">
-
-    <div class="config-table">
-
-      <div class="config-row">
-        <span>
-          Model
-        </span>
-
-        <strong>
-          ResNet-50 Scratch
-        </strong>
-      </div>
-
-      <div class="config-row">
-        <span>
-          Pretrained
-        </span>
-
-        <strong>
-          None
-        </strong>
-      </div>
-
-      <div class="config-row">
-        <span>
-          Optimizer
-        </span>
-
-        <strong>
-          AdamW
-        </strong>
-      </div>
-
-      <div class="config-row">
-        <span>
-          Learning Rate
-        </span>
-
-        <strong>
-          0.001
-        </strong>
-      </div>
-
-      <div class="config-row">
-        <span>
-          Weight Decay
-        </span>
-
-        <strong>
-          0.0001
-        </strong>
-      </div>
-
-    </div>
-
-    <div class="config-table">
-
-      <div class="config-row">
-        <span>
-          Batch Size
-        </span>
-
-        <strong>
-          32
-        </strong>
-      </div>
-
-      <div class="config-row">
-        <span>
-          Epoch
-        </span>
-
-        <strong>
-          20
-        </strong>
-      </div>
-
-      <div class="config-row">
-        <span>
-          Loss
-        </span>
-
-        <strong>
-          CrossEntropyLoss
-        </strong>
-      </div>
-
-      <div class="config-row">
-        <span>
-          Positive Class
-        </span>
-
-        <strong>
-          PNEUMONIA
-        </strong>
-      </div>
-
-      <div class="config-row">
-        <span>
-          Device
-        </span>
-
-        <strong>
-          RTX 3070
-        </strong>
-      </div>
-
-    </div>
-
-  </div>
-
-  <p class="bottom-note">
-    우선 기본 설정으로 1차 학습을 진행한 뒤,
-    Validation 결과를 바탕으로 학습 조건을 추가 조정합니다.
-  </p>
-
-</section>
-
-
-<section>
-
-  <div class="eyebrow">
     EXPERIMENT MANAGEMENT
   </div>
 
@@ -1435,6 +1506,136 @@
 <section>
 
   <div class="eyebrow">
+    TRAINING CONFIGURATION
+  </div>
+
+  <h2>
+    1차 학습 설정
+  </h2>
+
+  <div class="config-layout">
+
+    <div class="config-table">
+
+      <div class="config-row">
+        <span>
+          Model
+        </span>
+
+        <strong>
+          ResNet-50 Scratch
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Pretrained
+        </span>
+
+        <strong>
+          None
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Optimizer
+        </span>
+
+        <strong>
+          AdamW
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Learning Rate
+        </span>
+
+        <strong>
+          0.001
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Weight Decay
+        </span>
+
+        <strong>
+          0.0001
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="config-table">
+
+      <div class="config-row">
+        <span>
+          Batch Size
+        </span>
+
+        <strong>
+          32
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Epoch
+        </span>
+
+        <strong>
+          20
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Loss
+        </span>
+
+        <strong>
+          CrossEntropyLoss
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Positive Class
+        </span>
+
+        <strong>
+          PNEUMONIA
+        </strong>
+      </div>
+
+      <div class="config-row">
+        <span>
+          Device
+        </span>
+
+        <strong>
+          RTX 3070
+        </strong>
+      </div>
+
+    </div>
+
+  </div>
+
+  <p class="bottom-note">
+    Smoke Test로 전체 Pipeline의 정상 동작을 확인한 뒤,
+    위 조건으로 <strong>20 Epoch 1차 Baseline 학습</strong>을 진행했습니다.
+  </p>
+
+</section>
+
+
+<section>
+
+  <div class="eyebrow">
     EXPERIMENT RESULT
   </div>
 
@@ -1446,8 +1647,8 @@
 
     <div class="result-graph">
 
-      <div class="graph-placeholder">
-        Loss Curve
+      <div class="result-graph-image">
+        <img src="images/loss_curve.png" alt="Train and Validation Loss Curve">
       </div>
 
       <strong>
@@ -1458,8 +1659,8 @@
 
     <div class="result-graph">
 
-      <div class="graph-placeholder">
-        Validation Metrics
+      <div class="result-graph-image">
+        <img src="images/validation_metrics.png" alt="Validation Metrics">
       </div>
 
       <strong>
@@ -1646,8 +1847,38 @@
 
   <div class="gpu-layout">
 
-    <div class="gpu-image image-placeholder">
-      GPU Usage Screenshot
+    <div class="gpu-comparison">
+
+      <div class="gpu-shot-card">
+        <div class="gpu-shot-label">
+          GPU UTILIZATION · LOW
+        </div>
+
+        <div class="gpu-shot-image">
+          <img src="images/gpu_8.png" alt="GPU utilization 8 percent">
+        </div>
+
+        <div class="gpu-shot-value">
+          <strong>8%</strong>
+          <span>GPU 대기 구간</span>
+        </div>
+      </div>
+
+      <div class="gpu-shot-card highlight">
+        <div class="gpu-shot-label">
+          GPU UTILIZATION · ACTIVE
+        </div>
+
+        <div class="gpu-shot-image">
+          <img src="images/gpu_64.png" alt="GPU utilization 64 percent">
+        </div>
+
+        <div class="gpu-shot-value">
+          <strong>64%</strong>
+          <span>GPU 연산 구간</span>
+        </div>
+      </div>
+
     </div>
 
     <div class="gpu-description">

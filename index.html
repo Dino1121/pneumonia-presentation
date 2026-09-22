@@ -1,14 +1,16 @@
 <!doctype html>
+
 <html lang="ko">
 
 <head>
   <meta charset="utf-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
- 
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
+>
+
   <title>Chest X-ray 기반 폐렴 이진 분류</title>
 
   <link
@@ -21,120 +23,150 @@
 
   <main class="page">
 
-    <!-- HEADER -->
-    <header class="header">
+```
+<header class="header">
 
-      <div class="eyebrow">
-        Chest X-ray Pneumonia Classification
+  <div class="eyebrow">
+    Chest X-ray Pneumonia Classification
+  </div>
+
+  <h1>
+    Chest X-ray 기반<br>
+    폐렴 이진 분류
+  </h1>
+
+  <p class="subtitle">
+    ResNet-50 · Scratch vs Transfer Learning · Grad-CAM++
+  </p>
+
+</header>
+
+
+<section class="presentation-section">
+
+  <div class="section-header">
+    <div>
+      <span class="section-label">WEEKLY PRESENTATION</span>
+      <h2>주차별 발표자료</h2>
+    </div>
+
+    <p>
+      프로젝트 진행 과정과 실험 결과를<br>
+      주차별로 정리한 발표자료입니다.
+    </p>
+  </div>
+
+
+  <div class="week-grid">
+
+    <a
+      class="week-card"
+      href="./week1/"
+    >
+
+      <div class="week-top">
+        <span class="week-number">WEEK 01</span>
+        <span class="arrow">→</span>
       </div>
 
-      <h1>
-        Chest X-ray 기반<br>
-        폐렴 이진 분류
-      </h1>
+      <div class="week-content">
 
-      <p class="subtitle">
-        ResNet-50 · Scratch vs Transfer Learning · Grad-CAM++
-      </p>
-
-    </header>
-
-
-    <!-- PRESENTATIONS -->
-    <section class="presentation-section">
-
-      <div class="section-header">
-        <div>
-          <span class="section-label">WEEKLY PRESENTATION</span>
-          <h2>주차별 발표자료</h2>
-        </div>
+        <h3>
+          프로젝트 설계 및<br>
+          Dataset 재구성
+        </h3>
 
         <p>
-          프로젝트 진행 과정과 실험 결과를<br>
-          주차별로 정리한 발표자료입니다.
+          프로젝트 목표 설정부터 Dataset 분석,
+          Group 기반 Split 재구성까지
         </p>
-      </div>
-
-
-      <div class="week-grid">
-
-        <!-- WEEK 01 -->
-        <a
-          class="week-card"
-          href="./week1/"
-        >
-
-          <div class="week-top">
-            <span class="week-number">WEEK 01</span>
-            <span class="arrow">→</span>
-          </div>
-
-          <div class="week-content">
-
-            <h3>
-              프로젝트 설계 및<br>
-              Dataset 재구성
-            </h3>
-
-            <p>
-              프로젝트 목표 설정부터 Dataset 분석,
-              Group 기반 Split 재구성까지
-            </p>
-
-          </div>
-
-          <div class="week-tags">
-            <span>Dataset</span>
-            <span>Group Split</span>
-            <span>ResNet-50</span>
-          </div>
-
-        </a>
-
-
-        <!-- WEEK 02 -->
-        <a
-          class="week-card active"
-          href="./week2/"
-        >
-
-          <div class="week-top">
-            <span class="week-number">WEEK 02</span>
-            <span class="arrow">→</span>
-          </div>
-
-          <div class="week-content">
-
-            <h3>
-              Baseline 모델 구축 및<br>
-              1차 학습
-            </h3>
-
-            <p>
-              전처리 파이프라인 구축과
-              ResNet-50 Scratch 모델의 1차 학습
-            </p>
-
-          </div>
-          
-          <div class="week-tags">
-            <span>Preprocessing</span>
-            <span>Scratch</span>
-            <span>Training</span>
-          </div>
-
-        </a>
 
       </div>
 
-    </section>
+      <div class="week-tags">
+        <span>Dataset</span>
+        <span>Group Split</span>
+        <span>ResNet-50</span>
+      </div>
+
+    </a>
 
 
-    <!-- FOOTER -->
-    <footer>
-      <span>202544030 이현서</span>
-      <span>Inha Technical College</span>
-    </footer>
+    <a
+      class="week-card"
+      href="./week2/"
+    >
+
+      <div class="week-top">
+        <span class="week-number">WEEK 02</span>
+        <span class="arrow">→</span>
+      </div>
+
+      <div class="week-content">
+
+        <h3>
+          Baseline 모델 구축 및<br>
+          1차 학습
+        </h3>
+
+        <p>
+          전처리 파이프라인 구축과
+          ResNet-50 Scratch 모델의 1차 학습
+        </p>
+
+      </div>
+
+      <div class="week-tags">
+        <span>Preprocessing</span>
+        <span>Scratch</span>
+        <span>Training</span>
+      </div>
+
+    </a>
+
+
+    <a
+      class="week-card active"
+      href="./week3/"
+    >
+
+      <div class="week-top">
+        <span class="week-number">WEEK 03</span>
+        <span class="arrow">→</span>
+      </div>
+
+      <div class="week-content">
+
+        <h3>
+          데이터 검증 및<br>
+          Scratch vs Transfer Learning
+        </h3>
+
+        <p>
+          데이터 무결성 검증부터 학습 안정성 분석,
+          수렴 속도와 최종 성능 비교까지
+        </p>
+
+      </div>
+
+      <div class="week-tags">
+        <span>Data Integrity</span>
+        <span>Transfer Learning</span>
+        <span>Convergence</span>
+      </div>
+
+    </a>
+
+  </div>
+
+</section>
+
+
+<footer>
+  <span>202544030 이현서</span>
+  <span>Inha Technical College</span>
+</footer>
+```
 
   </main>
 

@@ -398,6 +398,52 @@
     </div>
 </section>
 
+<section class="lr-explain-slide">
+  <div class="slide-header">
+    <div class="section-label">Scratch Model · Learning Rate</div>
+    <h2>Learning Rate와 학습 안정성</h2>
+    <p class="subtitle">Validation 성능 변동의 원인 중 하나로 Learning Rate를 확인</p>
+  </div>
+
+  <div class="lr-explain-content">
+    <div class="lr-explain-definition">
+      <span class="lr-explain-label">Learning Rate</span>
+      <span class="lr-explain-text">
+        한 번의 학습에서 모델의 파라미터를
+        <strong>얼마나 크게 변경할지</strong> 결정하는 값
+      </span>
+    </div>
+
+    <div class="lr-explain-main">
+      <div class="lr-explain-image">
+        <img src="images/ex1.png" alt="Learning Rate 크기에 따른 Step Size 비교">
+      </div>
+
+      <div class="lr-explain-points">
+        <div class="lr-point small">
+          <div class="lr-point-title">작은 Learning Rate</div>
+          <div class="lr-point-body">
+            작은 보폭으로 안정적으로 접근<br>
+            <strong>더 많은 학습 Step 필요</strong>
+          </div>
+        </div>
+
+        <div class="lr-point large">
+          <div class="lr-point-title">큰 Learning Rate</div>
+          <div class="lr-point-body">
+            큰 보폭으로 빠르게 이동<br>
+            <strong>최저점을 지나치며 Loss 변동 가능</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lr-explain-bottom">
+      높은 Learning Rate가 Validation 변동의 원인일 가능성
+      <span>→ Fixed LR 감소 실험</span>
+    </div>
+  </div>
+</section>
 
 <section>
     <div class="slide-body experiment-setting-slide">
@@ -481,6 +527,54 @@
     </div>
 </section>
 
+
+<section class="adaptive-explain-slide">
+  <div class="slide-header">
+    <h2>Scratch Model · Adaptive Learning Rate</h2>
+    <p class="subtitle">Learning Rate를 낮춰도 Validation 변동성이 지속됨</p>
+  </div>
+
+  <div class="adaptive-explain-main">
+    <div class="adaptive-explain-image">
+      <img src="images/ex2.png" alt="학습 진행에 따른 Step Size 변화">
+    </div>
+
+    <div class="adaptive-explain-right">
+      <div class="adaptive-problem">
+        <div class="adaptive-problem-title">Fixed LR 감소</div>
+        <div class="adaptive-problem-value">5e-4 → 1e-4</div>
+        <div class="adaptive-problem-result">
+          Validation 변동 지속
+        </div>
+      </div>
+
+      <div class="adaptive-question">
+        그렇다면 LR을 계속 낮추면?
+        <span>더 많은 학습 Step이 필요 → 학습 시간 증가</span>
+      </div>
+
+      <div class="adaptive-solution">
+        <div class="adaptive-solution-label">Adaptive Learning Rate</div>
+
+        <div class="adaptive-stage">
+          <strong>초기</strong>
+          <span>충분한 LR로 빠르게 학습</span>
+        </div>
+
+        <div class="adaptive-stage-arrow">↓</div>
+
+        <div class="adaptive-stage">
+          <strong>개선 정체</strong>
+          <span>LR을 낮춰 더 세밀하게 학습</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="adaptive-explain-bottom">
+    학습 효율을 유지하면서 <strong>안정적인 수렴</strong>을 유도
+  </div>
+</section>
 <section>
     <div class="slide-body experiment-setting-slide">
         <header>

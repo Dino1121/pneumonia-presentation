@@ -164,19 +164,11 @@ body,
 .title-image {
     position: absolute;
     top: 90px;
-    right: 62px;
-    width: 345px;
+    right: 40px;
+    width: 370px;
     height: 455px;
-    overflow: hidden;
-    border-radius: 22px;
-    box-shadow: 0 24px 60px rgba(15,23,42,.12);
 }
 
-.title-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
 
 .toc-grid {
     display: grid;
@@ -1231,4 +1223,404 @@ body,
     background: transparent;
     color: var(--light);
     font: 12px "Pretendard", sans-serif;
+}
+
+.experiment-setting-slide .experiment-question {
+    margin: 0 auto 35px;
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 650;
+    text-align: center;
+}
+
+.change-row.large {
+    margin: 0 auto;
+}
+
+.change-row.large > div {
+    min-width: 260px;
+}
+
+.change-row.large strong {
+    font-size: 58px;
+}
+
+.experiment-fixed {
+    width: 760px;
+    margin: 37px auto 0;
+    padding-top: 15px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+}
+
+.experiment-fixed span {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.experiment-fixed strong {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 650;
+}
+
+.result-graph-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 175px;
+    gap: 32px;
+    align-items: center;
+}
+
+.result-graph {
+    height: 305px;
+}
+
+.result-points {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.result-points > div {
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+}
+
+.result-points span {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.result-points strong {
+    display: block;
+    margin: 3px 0;
+    color: var(--ink);
+    font-size: 24px;
+}
+
+.result-points small {
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.scheduler-flow {
+    display: grid;
+    grid-template-columns: 1fr 70px 1fr;
+    align-items: center;
+    width: 760px;
+    margin: 0 auto;
+}
+
+.scheduler-flow > div {
+    padding: 17px 20px;
+    border-top: 3px solid var(--line);
+    text-align: center;
+}
+
+.scheduler-flow > div.active {
+    border-color: var(--blue);
+}
+
+.scheduler-flow > b {
+    color: var(--light);
+    font-size: 28px;
+    text-align: center;
+}
+
+.scheduler-flow span {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.scheduler-flow .active span {
+    color: var(--blue);
+}
+
+.scheduler-flow strong {
+    display: block;
+    color: var(--ink);
+    font-size: 20px;
+}
+
+.scheduler-flow .active strong {
+    color: var(--blue);
+}
+
+.scheduler-flow p {
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+.scheduler-settings {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 27px;
+    margin-top: 33px;
+}
+
+.scheduler-settings > div {
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+}
+
+.scheduler-settings span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.scheduler-settings strong {
+    display: block;
+    margin: 4px 0 2px;
+    font-size: 21px;
+}
+
+.scheduler-settings small {
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.adaptive-result {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 185px;
+    gap: 32px;
+    align-items: center;
+}
+
+.adaptive-graph {
+    height: 305px;
+}
+
+.adaptive-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.adaptive-summary > div {
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+}
+
+.adaptive-summary span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.adaptive-summary strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--ink);
+    font-size: 23px;
+}
+
+.adaptive-summary .improved strong {
+    color: var(--blue);
+}
+
+.duplicate-image {
+    border: none;
+    background: transparent;
+}
+
+.duplicate-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.graph-image {
+    padding: 0;
+    border: none;
+    background: transparent;
+    overflow: hidden;
+}
+
+.graph-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.graph-image {
+    padding: 0;
+    border: none;
+    background: transparent;
+    overflow: hidden;
+}
+
+.graph-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.wd-curve-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.wd-curve {
+    position: relative;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.wd-curve:first-child {
+    border-right: 1px solid var(--line);
+}
+
+.wd-curve img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.curve-label {
+    position: absolute;
+    top: 10px;
+    left: 14px;
+    z-index: 2;
+    padding: 7px 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.92);
+    text-align: left;
+}
+
+.curve-label strong {
+    display: block;
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.curve-label span {
+    display: block;
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+.convergence-slide {
+    padding-top: 42px;
+}
+
+.convergence-slide h2 {
+    margin-bottom: 22px;
+}
+
+.convergence-graph {
+    width: 100%;
+    height: 330px;
+    margin-bottom: 18px;
+}
+
+.convergence-graph img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.convergence-results {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.15fr;
+    width: 100%;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+}
+
+.convergence-metric {
+    padding: 14px 28px 12px;
+}
+
+.convergence-metric + .convergence-metric {
+    border-left: 1px solid var(--line);
+}
+
+.convergence-metric.primary {
+    background: var(--blue-soft);
+}
+
+.metric-name {
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.metric-name span {
+    margin-left: 6px;
+    color: var(--blue);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.metric-values {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.metric-values > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+}
+
+.metric-values span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.metric-values strong {
+    color: var(--ink);
+    font-size: 27px;
+    font-weight: 800;
+}
+
+.metric-result {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.blue {
+    color: var(--blue) !important;
+}
+
+.slide-takeaway {
+    margin-top: 15px;
+    color: var(--ink);
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.slide-takeaway strong {
+    font-weight: 800;
 }

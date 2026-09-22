@@ -199,9 +199,8 @@
                 <p>총 71쌍의 Cross-split 후보</p>
             </div>
 
-            <div class="image-slot">
-                <strong>동일 이미지 비교</strong>
-                <span>IM-0096 / IM-0095 이미지 삽입</span>
+            <div class="image-slot duplicate-image">
+                <img src="images/pair_001.png" alt="Cross-split 동일 이미지 비교">
             </div>
         </div>
 
@@ -364,9 +363,8 @@
         </header>
 
         <div class="graph-with-side">
-            <div class="graph-slot">
-                <strong>Train / Validation 학습 곡선</strong>
-                <span>그래프 이미지 삽입</span>
+            <div class="graph-slot graph-image">
+                <img src="images/exp005_loss_curve.png" alt="exp_005 Train Validation Loss Curve">
             </div>
 
             <div class="epoch-sequence">
@@ -402,15 +400,19 @@
 
 
 <section>
-    <div class="slide-body">
+    <div class="slide-body experiment-setting-slide">
         <header>
-            <div class="eyebrow">LEARNING RATE</div>
+            <div class="eyebrow">EXPERIMENT 006</div>
             <h2>Fixed Learning Rate 감소</h2>
         </header>
 
-        <div class="change-row">
+        <div class="experiment-question">
+            높은 Fixed Learning Rate가 Validation 변동의 원인인가?
+        </div>
+
+        <div class="change-row large">
             <div>
-                <span>기존</span>
+                <span>기존 설정</span>
                 <strong>5e-4</strong>
                 <small>0.0005</small>
             </div>
@@ -424,26 +426,16 @@
             </div>
         </div>
 
-        <div class="metric-row">
-            <div>
-                <span>Epoch 78 · Val Loss</span>
-                <strong>0.216</strong>
-            </div>
-
-            <div>
-                <span>Epoch 91 · Val Loss</span>
-                <strong>0.184</strong>
-            </div>
-
-            <div>
-                <span>Epoch 97 · Val Loss</span>
-                <strong>0.290</strong>
-            </div>
+        <div class="experiment-fixed">
+            <span>유지한 조건</span>
+            <strong>
+                AdamW · Weight Decay 1e-4 · Batch 32 · 100 Epochs · Seed 42
+            </strong>
         </div>
 
         <div class="takeaway">
-            LR을 낮춘 이후에도 큰 변동이 반복
-            <b>→ 높은 Fixed LR만의 문제로 보기 어려움</b>
+            다른 조건은 유지하고
+            <b>Learning Rate만 감소</b>
         </div>
     </div>
 </section>
@@ -452,74 +444,143 @@
 <section>
     <div class="slide-body">
         <header>
-            <div class="eyebrow">SCHEDULER</div>
-            <h2>Adaptive Learning Rate</h2>
+            <div class="eyebrow">EXPERIMENT 006 · RESULT</div>
+            <h2>LR을 낮춰도 변동성은 지속</h2>
         </header>
 
-        <div class="graph-with-side scheduler">
-            <div class="graph-slot">
-                <strong>exp_007 · Loss / Learning Rate</strong>
-                <span>그래프 이미지 삽입</span>
+        <div class="result-graph-layout">
+            <div class="graph-slot result-graph graph-image">
+                <img src="images/exp006_loss_curve.png" alt="exp_006 Train Validation Loss Curve">
             </div>
 
-            <div class="setting-list">
-                <div class="setting-title">ReduceLROnPlateau</div>
-
+            <div class="result-points">
                 <div>
-                    <span>Initial LR</span>
-                    <strong>1e-4</strong>
+                    <span>Epoch 78</span>
+                    <strong>0.216</strong>
+                    <small>Val Loss</small>
                 </div>
 
                 <div>
-                    <span>Factor</span>
-                    <strong>0.1</strong>
+                    <span>Epoch 91</span>
+                    <strong>0.184</strong>
+                    <small>Val Loss</small>
                 </div>
 
                 <div>
-                    <span>Patience</span>
-                    <strong>10</strong>
-                </div>
-
-                <div>
-                    <span>Minimum LR</span>
-                    <strong>1e-6</strong>
+                    <span>Epoch 97</span>
+                    <strong>0.290</strong>
+                    <small>Val Loss</small>
                 </div>
             </div>
         </div>
 
         <div class="takeaway">
-            Scheduler 적용 이후
-            <b>큰 Prediction 변동이 상당히 완화</b>
+            Fixed LR을 5e-4 → 1e-4로 낮췄지만
+            <b>Validation 변동성은 지속</b>
         </div>
     </div>
 </section>
 
-
 <section>
-    <div class="slide-body">
+    <div class="slide-body experiment-setting-slide">
         <header>
-            <div class="eyebrow">GENERALIZATION</div>
-            <h2>남아 있는 Generalization Gap</h2>
+            <div class="eyebrow">EXPERIMENT 007</div>
+            <h2>Validation Loss 기반 Adaptive LR</h2>
         </header>
 
-        <div class="graph-slot wide">
-            <strong>Train Loss / Validation Loss</strong>
-            <span>exp_007 학습 그래프 삽입</span>
+        <div class="experiment-question">
+            고정된 LR 대신 Validation 상태에 따라 LR을 조절하면 어떨까?
+        </div>
+
+        <div class="scheduler-flow">
+            <div>
+                <span>exp_006</span>
+                <strong>Fixed LR</strong>
+                <p>1e-4 유지</p>
+            </div>
+
+            <b>→</b>
+
+            <div class="active">
+                <span>exp_007</span>
+                <strong>ReduceLROnPlateau</strong>
+                <p>Validation Loss 기반 조절</p>
+            </div>
+        </div>
+
+        <div class="scheduler-settings">
+            <div>
+                <span>Initial LR</span>
+                <strong>1e-4</strong>
+                <small>0.0001</small>
+            </div>
+
+            <div>
+                <span>Factor</span>
+                <strong>0.1</strong>
+            </div>
+
+            <div>
+                <span>Patience</span>
+                <strong>10</strong>
+            </div>
+
+            <div>
+                <span>Minimum LR</span>
+                <strong>1e-6</strong>
+                <small>0.000001</small>
+            </div>
         </div>
 
         <div class="takeaway">
-            안정성은 개선됐지만
-            <b>Train–Validation Gap은 유지</b>
+            Validation Loss 개선이 정체되면
+            <b>Learning Rate를 단계적으로 감소</b>
         </div>
     </div>
 </section>
 
+<section>
+    <div class="slide-body">
+        <header>
+            <div class="eyebrow">EXPERIMENT 007 · RESULT</div>
+            <h2>Adaptive LR 적용 후 안정성 개선</h2>
+        </header>
+
+        <div class="adaptive-result">
+            <div class="graph-slot adaptive-graph graph-image">
+                <img src="images/exp007_loss_curve.png" alt="exp_007 Loss Curve">
+            </div>
+
+            <div class="adaptive-summary">
+                <div>
+                    <span>Best Val F1</span>
+                    <strong>98.82%</strong>
+                </div>
+
+                <div>
+                    <span>Best Epoch</span>
+                    <strong>47</strong>
+                </div>
+
+                <div class="improved">
+                    <span>Prediction Instability</span>
+                    <strong>완화</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="takeaway">
+            큰 Prediction 변동은 완화됐지만
+            <b>Train–Validation Gap은 여전히 존재</b>
+        </div>
+    </div>
+</section>
 
 <section>
     <div class="slide-body">
         <header>
-            <div class="eyebrow">REGULARIZATION</div>
-            <h2>Weight Decay와 Generalization Gap</h2>
+            <div class="eyebrow">EXPERIMENT 008</div>
+            <h2>Weight Decay 강화</h2>
         </header>
 
         <div class="wd-header">
@@ -539,10 +600,23 @@
         </div>
 
         <div class="wd-content">
-            <div class="graph-slot wd-graph-slot">
-                <strong>exp_007 vs exp_008</strong>
-                <span>Train / Validation Loss 비교 그래프 삽입</span>
-            </div>
+                <div class="wd-curve-comparison">
+                    <div class="wd-curve">
+                        <div class="curve-label">
+                            <strong>exp_007</strong>
+                            <span>WD 1e-4 (0.0001)</span>
+                        </div>
+                        <img src="images/exp007_loss_curve.png" alt="exp_007 Loss Curve">
+                    </div>
+
+                    <div class="wd-curve">
+                        <div class="curve-label">
+                            <strong>exp_008</strong>
+                            <span>WD 1e-3 (0.001)</span>
+                        </div>
+                        <img src="images/exp008_loss_curve.png" alt="exp_008 Loss Curve">
+                    </div>
+                </div>
 
             <div class="wd-stats">
                 <div>
@@ -561,11 +635,10 @@
 
         <div class="takeaway">
             후반 Validation Loss 상승 경향은 완화됐지만
-            <b>Train–Validation Gap은 유지</b>
+            <b>Generalization Gap 자체가 제거된 것은 아님</b>
         </div>
     </div>
 </section>
-
 
 <section class="section-divider">
     <div class="section-number">04</div>
@@ -934,32 +1007,85 @@
 
 
 <section>
-    <div class="slide-body">
-        <header>
-            <div class="eyebrow">CONVERGENCE</div>
-            <h2>수렴 속도 비교</h2>
-        </header>
+    <div class="slide-shell convergence-slide">
+        <div class="eyebrow">CONVERGENCE</div>
+        <h2>수렴 속도 비교</h2>
 
-        <div class="graph-slot wide convergence-slot">
-            <strong>Scratch vs Transfer Learning · Validation F1</strong>
-            <span>T95 · T97 · T99 수렴 그래프 삽입</span>
+        <div class="convergence-graph graph-image">
+            <img
+                src="images/convergence_comparison.png"
+                alt="Scratch와 Transfer Learning Validation F1 수렴 비교"
+            >
         </div>
 
-        <div class="convergence-summary">
-            <div>
-                <span>Scratch · T99</span>
-                <strong>51</strong>
+        <div class="convergence-results">
+            <div class="convergence-metric">
+                <div class="metric-name">T95</div>
+
+                <div class="metric-values">
+                    <div>
+                        <span>Scratch</span>
+                        <strong>4</strong>
+                    </div>
+
+                    <div>
+                        <span>Transfer</span>
+                        <strong>5</strong>
+                    </div>
+                </div>
+
+                <div class="metric-result">
+                    Scratch 1 Epoch 빠름
+                </div>
             </div>
 
-            <div class="difference">
-                <span>Transfer Learning</span>
-                <strong>39 Epochs Faster</strong>
+            <div class="convergence-metric">
+                <div class="metric-name">T97</div>
+
+                <div class="metric-values">
+                    <div>
+                        <span>Scratch</span>
+                        <strong>12</strong>
+                    </div>
+
+                    <div>
+                        <span>Transfer</span>
+                        <strong class="blue">9</strong>
+                    </div>
+                </div>
+
+                <div class="metric-result blue">
+                    Transfer 3 Epochs 빠름
+                </div>
             </div>
 
-            <div class="active">
-                <span>Transfer · T99</span>
-                <strong>12</strong>
+            <div class="convergence-metric primary">
+                <div class="metric-name">
+                    T99
+                    <span>PRIMARY</span>
+                </div>
+
+                <div class="metric-values">
+                    <div>
+                        <span>Scratch</span>
+                        <strong>51</strong>
+                    </div>
+
+                    <div>
+                        <span>Transfer</span>
+                        <strong class="blue">12</strong>
+                    </div>
+                </div>
+
+                <div class="metric-result blue">
+                    Transfer 39 Epochs 빠름
+                </div>
             </div>
+        </div>
+
+        <div class="slide-takeaway">
+            엄격한 <strong>T99 기준</strong>에서
+            <strong class="blue">Transfer Learning이 39 Epochs 빠르게 수렴</strong>
         </div>
     </div>
 </section>

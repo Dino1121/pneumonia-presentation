@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 04 | Pediatric Chest X-ray Pneumonia Classification</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/white.css">
+  <link rel="stylesheet" href="css/custom.css">
+</head>
+<body>
+  <a href="../" class="back-to-home">← 발표 목록</a>
+  <div class="reveal">
+    <div class="slides">
+      <section class="title-slide">
+        <div class="title-copy">
+          <div class="eyebrow">CHEST X-RAY PNEUMONIA CLASSIFICATION · WEEK 04</div>
+          <h1>
+            Grad-CAM++ 기반<br>
+            판단 근거 비교 분석
+          </h1>
+          <p class="subtitle">
+            Representative Model · Predicted-class Target · Spatial Pattern Comparison
+          </p>
+          <div class="student-info">202544030 이현서</div>
+        </div>
+        <div class="title-image-space"></div>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">CONTENTS</div>
+            <h2>목차</h2>
+          </header>
+          <div class="toc-grid">
+            <div class="toc-item">
+              <span>01</span>
+              <div>
+                <strong>지난주 진행사항</strong>
+                <small>Representative Model · 가설 검증 결과</small>
+              </div>
+            </div>
+            <div class="toc-item">
+              <span>02</span>
+              <div>
+                <strong>이번주 목표</strong>
+                <small>Research Question · Why Grad-CAM++</small>
+              </div>
+            </div>
+            <div class="toc-item">
+              <span>03</span>
+              <div>
+                <strong>Grad-CAM++ 분석 설계</strong>
+                <small>Model · Target Layer · Predicted-class Target</small>
+              </div>
+            </div>
+            <div class="toc-item">
+              <span>04</span>
+              <div>
+                <strong>Grad-CAM++ 비교 결과</strong>
+                <small>Result 1 · Result 2 · Result 3</small>
+              </div>
+            </div>
+            <div class="toc-item">
+              <span>05</span>
+              <div>
+                <strong>해석 및 한계</strong>
+                <small>Shortcut-like Feature · Careful Interpretation</small>
+              </div>
+            </div>
+            <div class="toc-item">
+              <span>06</span>
+              <div>
+                <strong>현재 진행상황</strong>
+                <small>Grad-CAM++ 완료 · 다음주 PyQt UI</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-divider">
+        <div class="section-number">01</div>
+        <div class="section-line"></div>
+        <h2>지난주 진행사항</h2>
+        <p>Representative Model · 가설 검증 결과</p>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">LAST WEEK SUMMARY</div>
+            <h2>Representative Model 선정</h2>
+          </header>
+          <div class="two-column compare-column">
+            <div class="metric-card highlight">
+              <span>SCRATCH</span>
+              <strong>exp_008</strong>
+              <p>Validation F1 기준 대표 모델</p>
+              <div class="metric-inline">Best Val F1 <b>0.9884</b></div>
+            </div>
+            <div class="metric-card highlight">
+              <span>TRANSFER LEARNING</span>
+              <strong>exp_003</strong>
+              <p>Validation F1 기준 대표 모델</p>
+              <div class="metric-inline">Best Val F1 <b>0.9919</b></div>
+            </div>
+          </div>
+          <div class="takeaway">
+            Representative model selection에는 <b>Test 결과를 사용하지 않음</b>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">HYPOTHESIS TEST</div>
+            <h2>지난주 가설 검증 결과</h2>
+          </header>
+          <div class="hypothesis-grid">
+            <div class="hypothesis-card">
+              <span>H1</span>
+              <strong>Transfer Learning이 분류 성능이 더 높을 것이다</strong>
+              <p>독립 Test set 평가 결과<br>분류 성능 우위는 명확히 지지되지 않음</p>
+              <div class="status-badge negative">지지되지 않음</div>
+            </div>
+            <div class="hypothesis-card">
+              <span>H2</span>
+              <strong>Transfer Learning이 더 빠르게 수렴할 것이다</strong>
+              <p>T97, T99 기준 수렴 속도 비교에서<br>Transfer Learning이 더 빠른 경향 확인</p>
+              <div class="status-badge positive">지지됨</div>
+            </div>
+          </div>
+          <div class="takeaway">
+            분류 결과는 비교했지만 <b>두 모델이 어떤 영역을 근거로 판단했는지는 아직 확인하지 못함</b>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-divider">
+        <div class="section-number">02</div>
+        <div class="section-line"></div>
+        <h2>이번주 진행내용</h2>
+        <p>Research Question · Why Grad-CAM++</p>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">RESEARCH QUESTION</div>
+            <h2>이번주 목표</h2>
+          </header>
+          <div class="question-box">
+            Scratch와 Transfer Learning은 비슷한 분류 결과를 보이더라도<br>
+            <b>실제로 비슷한 영역을 근거로 판단했을까?</b>
+          </div>
+          <div class="three-column compact-column">
+            <div>
+              <span>01</span>
+              <strong>동일한 입력 사용</strong>
+              <p>동일한 Test image와 동일한 preprocessing 결과 입력</p>
+            </div>
+            <div>
+              <span>02</span>
+              <strong>판단 근거 시각화</strong>
+              <p>Grad-CAM++로 predicted class에 기여한 영역 확인</p>
+            </div>
+            <div>
+              <span>03</span>
+              <strong>Spatial Pattern 비교</strong>
+              <p>두 모델의 heatmap 차이를 정성적으로 비교</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">GRAD-CAM++</div>
+            <h2>Grad-CAM++란?</h2>
+          </header>
+          <div class="two-column info-layout">
+            <div class="info-card">
+              <strong>핵심 아이디어</strong>
+              <p>마지막 convolution feature map을 이용해 예측 class에 기여한 위치를 heatmap으로 시각화</p>
+            </div>
+            <div class="info-card">
+              <strong>Grad-CAM과의 차이</strong>
+              <p>일반 Grad-CAM보다 feature map 내부 위치별 중요도를 더 세밀하게 반영</p>
+            </div>
+          </div>
+          <div class="takeaway">
+            성능만으로 보이지 않는 <b>모델의 spatial attribution pattern</b>을 비교하기 위한 도구로 사용
+          </div>
+        </div>
+      </section>
+
+      <section class="section-divider">
+        <div class="section-number">03</div>
+        <div class="section-line"></div>
+        <h2>Grad-CAM++ 분석 설계</h2>
+        <p>Model · Target Layer · Predicted-class Target</p>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">ANALYSIS SETUP</div>
+            <h2>분석 설정</h2>
+          </header>
+          <div class="setup-grid">
+            <div class="setup-card">
+              <span>MODELS</span>
+              <strong>Scratch : exp_008</strong>
+              <p>Transfer Learning : exp_003</p>
+            </div>
+            <div class="setup-card">
+              <span>TARGET LAYER</span>
+              <strong>layer4[-1]</strong>
+              <p>ResNet-50 마지막 convolutional block</p>
+            </div>
+            <div class="setup-card">
+              <span>TARGET SCORE</span>
+              <strong>Predicted-class logit</strong>
+              <p>Pre-softmax predicted-class target 사용</p>
+            </div>
+            <div class="setup-card">
+              <span>INPUT CONDITION</span>
+              <strong>Same Test image</strong>
+              <p>동일한 preprocessing 결과를 두 모델에 입력</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">PREDICTED-CLASS TARGET</div>
+            <h2>Predicted-class Target</h2>
+          </header>
+          <div class="two-column compare-column">
+            <div class="target-card">
+              <span>CASE 01</span>
+              <strong>Pred: NORMAL</strong>
+              <p>Grad-CAM++ target: NORMAL</p>
+            </div>
+            <div class="target-card">
+              <span>CASE 02</span>
+              <strong>Pred: PNEUMONIA</strong>
+              <p>Grad-CAM++ target: PNEUMONIA</p>
+            </div>
+          </div>
+          <div class="takeaway">
+            초기에는 PNEUMONIA로 고정했지만, 최종 구현에서는 <b>각 모델이 실제로 예측한 class</b>를 target으로 사용
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">TEST SAMPLE</div>
+            <h2>Test Sample 선택 및 결과 구성</h2>
+          </header>
+          <div class="two-column compare-column">
+            <div class="info-card">
+              <strong>Sample Selection</strong>
+              <p>Test split에서 class-balanced random sampling 사용</p>
+              <ul class="bullet-list">
+                <li>NORMAL 5 images</li>
+                <li>PNEUMONIA 5 images</li>
+                <li>Total 10 images</li>
+                <li>Random Seed 42</li>
+              </ul>
+            </div>
+            <div class="info-card">
+              <strong>Figure Composition</strong>
+              <p>각 sample마다 하나의 비교 figure 생성</p>
+              <ul class="bullet-list">
+                <li>Input</li>
+                <li>Scratch Grad-CAM++</li>
+                <li>Transfer Learning Grad-CAM++</li>
+                <li>Predicted class / Probability / CAM target</li>
+              </ul>
+            </div>
+          </div>
+          <p class="footnote">각 CAM은 모델별·이미지별로 독립적으로 [0,1] normalization</p>
+        </div>
+      </section>
+
+      <section class="section-divider">
+        <div class="section-number">04</div>
+        <div class="section-line"></div>
+        <h2>Grad-CAM++ 비교 결과</h2>
+        <p>Result 1 · Result 2 · Result 3</p>
+      </section>
+
+      <section>
+        <div class="slide-body image-slide-body">
+          <header>
+            <div class="eyebrow">RESULT 01</div>
+            <h2>동일하게 정답을 맞힌 사례</h2>
+          </header>
+          <div class="result-meta">
+            <span>Category : both_correct</span>
+            <span>Example : 동일한 정답 예측, 서로 다른 heatmap pattern</span>
+          </div>
+          <div class="cam-figure-space large-space"></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">RESULT 01 INSIGHT</div>
+            <h2>Result 1 해석</h2>
+          </header>
+          <div class="observation-list">
+            <div>
+              <span>01</span>
+              <p>두 모델이 동일한 정답을 예측하더라도 heatmap의 spatial pattern은 다를 수 있음</p>
+            </div>
+            <div>
+              <span>02</span>
+              <p>같은 classification output이 반드시 같은 visual evidence를 의미하지는 않음</p>
+            </div>
+            <div>
+              <span>03</span>
+              <p>성능 비교만으로는 모델의 판단 근거 차이를 확인하기 어려움</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide-body image-slide-body">
+          <header>
+            <div class="eyebrow">RESULT 02</div>
+            <h2>반복적으로 관찰된 패턴</h2>
+          </header>
+          <div class="result-meta">
+            <span>Scratch : boundary / padding / outside-lung response</span>
+            <span>Transfer Learning : more localized inside-lung activation</span>
+          </div>
+          <div class="cam-figure-space large-space"></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">RESULT 02 INSIGHT</div>
+            <h2>Result 2 해석</h2>
+          </header>
+          <div class="pattern-grid">
+            <div class="pattern-card scratch-card">
+              <span>SCRATCH</span>
+              <ul class="bullet-list tight">
+                <li>영상 상단 및 하단 경계</li>
+                <li>검은 padding 인접 영역</li>
+                <li>폐야 외부</li>
+                <li>넓고 diffuse한 activation</li>
+              </ul>
+            </div>
+            <div class="pattern-card tl-card">
+              <span>TRANSFER LEARNING</span>
+              <ul class="bullet-list tight">
+                <li>폐야 내부의 제한된 영역</li>
+                <li>흉곽 내부</li>
+                <li>Scratch보다 더 국소적인 activation</li>
+                <li>상대적으로 집중된 spatial pattern</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide-body image-slide-body">
+          <header>
+            <div class="eyebrow">RESULT 03</div>
+            <h2>다른 예측 카테고리 사례</h2>
+          </header>
+          <div class="result-meta">
+            <span>Category : scratch_only_correct / transfer_only_correct / both_wrong</span>
+            <span>추가 사례에서 반복 패턴 여부 확인</span>
+          </div>
+          <div class="cam-figure-space large-space"></div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">RESULT 03 INSIGHT</div>
+            <h2>Result 3 해석</h2>
+          </header>
+          <div class="two-column compare-column">
+            <div class="info-card">
+              <strong>의미</strong>
+              <p>정답 여부가 달라지는 사례에서도 각 모델이 반응하는 위치가 어떻게 달라지는지 비교 가능</p>
+            </div>
+            <div class="info-card">
+              <strong>활용</strong>
+              <p>오분류 사례를 함께 보면 모델의 실패 양상과 shortcut-like feature 가능성을 더 구체적으로 관찰 가능</p>
+            </div>
+          </div>
+          <div class="takeaway">
+            정답 여부와 heatmap pattern을 함께 보면 <b>단순 accuracy 비교보다 더 많은 정보</b>를 얻을 수 있음
+          </div>
+        </div>
+      </section>
+
+      <section class="section-divider">
+        <div class="section-number">05</div>
+        <div class="section-line"></div>
+        <h2>해석 및 한계</h2>
+        <p>Shortcut-like Feature · Careful Interpretation</p>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">INTERPRETATION</div>
+            <h2>Shortcut-like Feature 가능성</h2>
+          </header>
+          <div class="two-column compare-column">
+            <div class="info-card">
+              <strong>관찰</strong>
+              <ul class="bullet-list tight">
+                <li>Scratch에서 영상 경계, padding 인접 영역, 폐야 외부 반응이 반복적으로 관찰</li>
+                <li>Transfer Learning은 상대적으로 폐야 내부에 더 집중된 경향</li>
+              </ul>
+            </div>
+            <div class="info-card">
+              <strong>가능한 비병변적 cue</strong>
+              <ul class="bullet-list tight">
+                <li>Image borders</li>
+                <li>Padding geometry</li>
+                <li>Crop / positioning 차이</li>
+                <li>Markers / text / artifacts</li>
+              </ul>
+            </div>
+          </div>
+          <div class="takeaway">
+            Scratch 모델의 반응은 <b>dataset-specific shortcut-like feature 의존 가능성</b>을 시사하지만, 현재는 정성적 관찰 수준
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <div class="slide-body">
+          <header>
+            <div class="eyebrow">CAREFUL INTERPRETATION</div>
+            <h2>Grad-CAM++ 결과로 말할 수 있는 것 / 없는 것</h2>
+          </header>
+          <div class="two-column compare-column">
+            <div class="limit-card can-card">
+              <span>말할 수 있는 것</span>
+              <ul class="bullet-list tight">
+                <li>두 모델의 spatial attribution pattern이 다름</li>
+                <li>Scratch에서 폐야 외부 반응이 관찰됨</li>
+                <li>Transfer Learning에서 더 국소적인 activation이 자주 나타남</li>
+              </ul>
+            </div>
+            <div class="limit-card cannot-card">
+              <span>말할 수 없는 것</span>
+              <ul class="bullet-list tight">
+                <li>실제 병변을 정확히 localization했다고 단정</li>
+                <li>Transfer Learning이 임상적으로 더 옳다고 단정</li>
+                <li>Scratch의 shortcut learning을 확정</li>
+                <li>붉은 영역이 confidence 또는 severity를 의미한다고 해석</li>
+              </ul>
+            </div>
+          </div>
+          <p class="footnote">각 CAM은 독립적으로 normalization되므로 색 강도의 절대값을 직접 비교하지 않음</p>
+        </div>
+      </section>
+
+      <section class="section-divider">
+        <div class="section-number">06</div>
+        <div class="section-line"></div>
+        <h2>현재 진행상황</h2>
+        <p>Grad-CAM++ · PyQt UI</p>
+      </section>
+
+      <section>
+        <div class="slide-body progress-slide">
+          <header>
+            <div class="eyebrow">CURRENT PROGRESS</div>
+            <h2>현재 진행상황 및 다음주 계획</h2>
+          </header>
+
+          <div class="progress-track">
+            <div class="progress-step completed">
+              <div class="progress-status">DONE</div>
+              <div class="progress-dot">✓</div>
+              <strong>Data Integrity</strong>
+              <p>Group · SHA · pHash</p>
+            </div>
+
+            <div class="progress-connector"></div>
+
+            <div class="progress-step completed">
+              <div class="progress-status">DONE</div>
+              <div class="progress-dot">✓</div>
+              <strong>Model Comparison</strong>
+              <p>Scratch · Transfer Learning</p>
+            </div>
+
+            <div class="progress-connector"></div>
+
+            <div class="progress-step completed">
+              <div class="progress-status">DONE</div>
+              <div class="progress-dot">✓</div>
+              <strong>Evaluation</strong>
+              <p>Validation · Convergence · Test</p>
+            </div>
+
+            <div class="progress-connector"></div>
+
+            <div class="progress-step completed">
+              <div class="progress-status">DONE</div>
+              <div class="progress-dot">✓</div>
+              <strong>Grad-CAM++</strong>
+              <p>모델 판단 근거 비교 분석</p>
+            </div>
+          </div>
+
+          <div class="progress-next">
+            <span>NEXT WEEK</span>
+            <strong>PyQt UI · Inference 연결</strong>
+            <p>대표 모델 추론과 Grad-CAM++ 결과를 사용자 인터페이스에 연결</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="thank-slide">
+        <div class="eyebrow">CHEST X-RAY PNEUMONIA CLASSIFICATION</div>
+        <h1>감사합니다</h1>
+        <p>Grad-CAM++ · Scratch vs Transfer Learning</p>
+        <div class="student-info">202544030 이현서</div>
+      </section>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: true,
+      controls: true,
+      progress: true,
+      transition: "slide",
+      transitionSpeed: "default",
+      backgroundTransition: "slide",
+      width: 1280,
+      height: 720,
+      margin: 0
+    });
+  </script>
+</body>
+</html>

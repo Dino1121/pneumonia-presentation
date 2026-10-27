@@ -1,131 +1,145 @@
 <!doctype html>
 <html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chest X-ray 기반 폐렴 이진 분류</title>
-  <link rel="stylesheet" href="css/main.css">
-</head>
-<body>
-  <main class="page">
-    <header class="header">
-      <div class="eyebrow">Chest X-ray Pneumonia Classification</div>
-      <h1>
-        Chest X-ray 기반<br>
-        폐렴 이진 분류
-      </h1>
-      <p class="subtitle">
-        ResNet-50 · Scratch vs Transfer Learning · Grad-CAM++
-      </p>
-    </header>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chest X-ray 기반 폐렴 이진 분류</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/project.css">
+  </head>
+  <body>
+    <main class="page">
+      <header class="header">
+        <div class="eyebrow">Chest X-ray Pneumonia Classification</div>
+        <h1>Chest X-ray 기반<br>폐렴 이진 분류</h1>
+        <p class="subtitle">ResNet-50 · Scratch vs Transfer Learning · Grad-CAM++</p>
+        <p class="small-meta">202544030 이현서</p>
+      </header>
 
-    <section class="presentation-section">
-      <div class="section-header">
-        <div>
-          <span class="section-label">WEEKLY PRESENTATION</span>
-          <h2>주차별 발표자료</h2>
+      <section class="overview" id="project-overview">
+        <div class="section-header">
+          <div>
+            <span class="section-label">PROJECT OVERVIEW</span>
+            <h2>프로젝트 기획서</h2>
+          </div>
         </div>
-        <p>
-          프로젝트 진행 과정과 실험 결과를<br>
-          주차별로 정리한 발표자료입니다.
-        </p>
-      </div>
 
-      <div class="week-grid">
-        <a class="week-card" href="./week1/">
-          <div class="week-top">
-            <span class="week-number">WEEK 01</span>
-            <span class="arrow">→</span>
+        <article class="overview-item">
+          <span class="overview-number">01</span>
+          <div>
+            <h3>프로젝트 기획</h3>
+            <p>소아 Chest X-ray 영상에서 폐렴 여부를 이진 분류하는 모델을 구축하고, 동일한 ResNet-50 구조에서 Scratch 학습과 ImageNet 사전학습 기반 Transfer Learning을 비교한다. Dataset 분석과 누수 점검, Group-aware 분할, 전처리, 하이퍼파라미터 탐색, 독립 Test 평가, Grad-CAM++ 해석을 순차적으로 수행한다.</p>
           </div>
-          <div class="week-content">
-            <h3>
-              프로젝트 설계 및<br>
-              Dataset 재구성
-            </h3>
-            <p>
-              프로젝트 목표 설정부터 Dataset 분석,
-              Group 기반 Split 재구성까지
-            </p>
-          </div>
-          <div class="week-tags">
-            <span>Dataset</span>
-            <span>Group Split</span>
-            <span>ResNet-50</span>
-          </div>
-        </a>
+        </article>
 
-        <a class="week-card" href="./week2/">
-          <div class="week-top">
-            <span class="week-number">WEEK 02</span>
-            <span class="arrow">→</span>
+        <article class="overview-item">
+          <span class="overview-number">02</span>
+          <div>
+            <h3>프로젝트 명</h3>
+            <p><strong>Chest X-ray 기반 소아 폐렴 이진 분류</strong> (Pediatric Chest X-ray Pneumonia Classification)</p>
+            <p class="overview-sub">ResNet-50 · Scratch vs Transfer Learning · Grad-CAM++</p>
           </div>
-          <div class="week-content">
-            <h3>
-              Baseline 모델 구축 및<br>
-              1차 학습
-            </h3>
-            <p>
-              전처리 파이프라인 구축과
-              ResNet-50 Scratch 모델의 1차 학습
-            </p>
-          </div>
-          <div class="week-tags">
-            <span>Preprocessing</span>
-            <span>Scratch</span>
-            <span>Training</span>
-          </div>
-        </a>
+        </article>
 
-        <a class="week-card" href="./week3/">
-          <div class="week-top">
-            <span class="week-number">WEEK 03</span>
-            <span class="arrow">→</span>
+        <article class="overview-item">
+          <span class="overview-number">03</span>
+          <div>
+            <h3>프로젝트 배경 및 목적</h3>
+            <p>Chest X-ray 영상 분류는 컴퓨터 비전 기술의 의료영상 적용을 이해하기 좋은 사례다. 다만 높은 분류 정확도만으로 모델의 신뢰성과 일반화를 설명하기는 어렵다. 이 프로젝트는 동일 Backbone을 조건으로 학습 초기화 방식에 따른 분류 성능과 수렴 속도를 비교하고, Grad-CAM++를 사용해 모델이 주목하는 공간적 영역의 차이를 정성적으로 분석하는 것을 목표로 한다.</p>
           </div>
-          <div class="week-content">
-            <h3>
-              데이터 검증 및<br>
-              Scratch vs Transfer Learning
-            </h3>
-            <p>
-              데이터 무결성 검증부터 학습 안정성 분석,
-              수렴 속도와 최종 성능 비교까지
-            </p>
-          </div>
-          <div class="week-tags">
-            <span>Data Integrity</span>
-            <span>Transfer Learning</span>
-            <span>Convergence</span>
-          </div>
-        </a>
+        </article>
 
-        <a class="week-card active" href="./week4/">
-          <div class="week-top">
-            <span class="week-number">WEEK 04</span>
-            <span class="arrow">→</span>
+        <article class="overview-item">
+          <span class="overview-number">04</span>
+          <div>
+            <h3>프로젝트 벤치마킹</h3>
+            <p><strong>기존 기반 연구:</strong> Kermany et al. (2018)의 소아 흉부 X-ray 공개 데이터셋을 기반으로 NORMAL / PNEUMONIA 분류 문제를 구성했다. <strong>접근 방식 비교:</strong> 동일한 ResNet-50에서 무작위 초기화(Scratch)와 ImageNet 사전학습(Transfer Learning)을 동일한 분할 및 탐색 규모로 비교한다. Grad-CAM++(Chattopadhay et al., 2018)로 예측 근거의 시각적 차이를 살핀다.</p>
+            <p>최종 실험에서 Scratch Test F1은 <strong>98.36%</strong>, Transfer Learning은 <strong>97.30%</strong>였다. 반면 T99 수렴 시점은 각각 <strong>51 epoch</strong>, <strong>12 epoch</strong>로 Transfer Learning이 더 빨랐다. 외부 논문의 수치와 직접적인 성능 순위는 매기지 않는다.</p>
+            <p class="overview-sub">관련 문헌: <a href="https://doi.org/10.1016/j.cell.2018.02.010" target="_blank" rel="noopener">Kermany et al., Cell (2018)</a> · <a href="https://doi.org/10.1109/WACV.2018.00097" target="_blank" rel="noopener">Grad-CAM++ (2018)</a></p>
           </div>
-          <div class="week-content">
-            <h3>
-              Grad-CAM++ 분석 및<br>
-              판단 근거 비교
-            </h3>
-            <p>
-              Representative Model 선정 결과를 바탕으로
-              Scratch와 Transfer Learning의 heatmap pattern 비교
-            </p>
+        </article>
+
+        <article class="overview-item">
+          <span class="overview-number">05</span>
+          <div>
+            <h3>프로젝트 기대효과</h3>
+            <p>① 데이터 누수 방지와 재현 가능한 평가 파이프라인 구축 경험 ② 사전학습이 수렴 속도와 최종 분류 성능에 미치는 영향을 구분하여 해석 ③ Grad-CAM++를 통한 모델 판단 근거의 한계 이해 ④ 추후 Domain Generalization, OOD Detection, 강건성 분석 등 학습 방법론 연구에 연결할 기초 확보를 기대한다.</p>
+            <p class="overview-sub">본 프로젝트는 교육·연구 목적이며 의료 진단 용도로 사용할 수 없다. 현재 단일 데이터셋·단일 Seed 분석이라는 한계가 있다.</p>
           </div>
-          <div class="week-tags">
-            <span>Grad-CAM++</span>
-            <span>XAI</span>
-            <span>Shortcut-like Feature</span>
+        </article>
+      </section>
+
+      <section class="presentation-section">
+        <div class="section-header">
+          <div>
+            <span class="section-label">WEEKLY PRESENTATION</span>
+            <h2>주차별 발표자료</h2>
           </div>
-        </a>
-      </div>
-    </section>
+          <p>진행 과정과 실험 결과를<br>주차별로 정리한 발표자료입니다.</p>
+        </div>
+        
+        <div class="week-grid">
+          <a class="week-card " href="./week1/">
+            <div class="week-top">
+              <span class="week-number">WEEK 01</span>
+              <span class="arrow">→</span>
+            </div>
+            <div class="week-content">
+              <h3>프로젝트 설계 및 Dataset 재구성</h3>
+              <p>데이터 분할 설계 · Group 기반 Leakage 검증</p>
+            </div>
+          </a>
+          
+          <a class="week-card " href="./week2/">
+            <div class="week-top">
+              <span class="week-number">WEEK 02</span>
+              <span class="arrow">→</span>
+            </div>
+            <div class="week-content">
+              <h3>Baseline 모델 및 1차 학습</h3>
+              <p>Preprocessing · Scratch Training</p>
+            </div>
+          </a>
+          
+          <a class="week-card " href="./week3/">
+            <div class="week-top">
+              <span class="week-number">WEEK 03</span>
+              <span class="arrow">→</span>
+            </div>
+            <div class="week-content">
+              <h3>Scratch vs Transfer Learning</h3>
+              <p>Data Integrity · Convergence · Test</p>
+            </div>
+          </a>
+          
+          <a class="week-card " href="./week4/">
+            <div class="week-top">
+              <span class="week-number">WEEK 04</span>
+              <span class="arrow">→</span>
+            </div>
+            <div class="week-content">
+              <h3>Grad-CAM++ 판단 근거 비교</h3>
+              <p>Explainability · Spatial Pattern</p>
+            </div>
+          </a>
+          
+          <a class="week-card active" href="./week5/">
+            <div class="week-top">
+              <span class="week-number">WEEK 05</span>
+              <span class="arrow">→</span>
+            </div>
+            <div class="week-content">
+              <h3>프로젝트 정리와 다음 연구 방향</h3>
+              <p>범위 재검토 · 연구 관심 분야 · 다음 계획</p>
+            </div>
+          </a>
+        </div>
+      </section>
+    </main>
 
     <footer>
       <span>202544030 이현서</span>
       <span>Inha Technical College</span>
     </footer>
-  </main>
-</body>
+  </body>
 </html>

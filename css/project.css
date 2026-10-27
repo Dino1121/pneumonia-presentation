@@ -1,0 +1,79 @@
+.overview {
+  padding: 48px 0 32px;
+  border-bottom: 1px solid var(--line);
+}
+
+.overview-item {
+  display: grid;
+  grid-template-columns: 53px 1fr;
+  gap: 20px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.overview-item:last-child {
+  border-bottom: 0;
+}
+
+.overview-number {
+  color: var(--blue);
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.overview-item h3 {
+  font-size: 21px;
+  margin: 0 0 13px;
+  letter-spacing: -.5px;
+}
+
+.overview-item p {
+  font-size: 15px;
+  line-height: 1.85;
+  color: #334155;
+  margin: 0 0 12px;
+  max-width: 960px;
+}
+
+.overview-item .overview-sub {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.overview-item a {
+  color: var(--blue);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.small-meta {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 24px;
+}
+
+.week-card {
+  min-height: 220px;
+}
+
+.week-content {
+  margin-top: 32px;
+}
+
+.week-content h3 {
+  font-size: 21px;
+}
+
+.week-content p {
+  font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .overview-item {
+    grid-template-columns: 30px 1fr;
+    gap: 10px;
+  }
+  .overview-item p {
+    font-size: 14px;
+  }
+}
